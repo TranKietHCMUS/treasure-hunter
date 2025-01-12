@@ -1,5 +1,6 @@
 package com.example.treasurehunter
 
+import MapScreen
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,9 +16,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.treasurehunter.ui.screen.CreateRoomScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
-//import com.example.treasurehunter.ui.theme.TreasureHunterTheme
+import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 
@@ -34,12 +34,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
-//            TreasureHunterTheme {
-//                MyApp()
-
-            MyApp()
-
+            TreasureHunterTheme {
+                MyApp()
+            }
         }
     }
 }
@@ -61,7 +60,7 @@ fun MyApp(modifier: Modifier = Modifier) {
             modifier = Modifier
         ) {
             composable("home") { HomeScreen() }
-//            composable("createRoom") { CreateRoomScreen() }
+            composable("map") { MapScreen() }
         }
     }
 }
