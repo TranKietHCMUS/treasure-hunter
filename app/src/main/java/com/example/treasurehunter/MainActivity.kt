@@ -1,5 +1,6 @@
 package com.example.treasurehunter
 
+import MapScreen
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             TreasureHunterTheme {
                 MyApp()
@@ -58,6 +60,7 @@ fun MyApp(modifier: Modifier = Modifier) {
             modifier = Modifier
         ) {
             composable("home") { HomeScreen() }
+            composable("map") { MapScreen() }
         }
     }
 }
