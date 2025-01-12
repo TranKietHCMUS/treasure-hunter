@@ -8,10 +8,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -47,6 +53,7 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
     error("NavController is not provided")
 }
 
+@Preview
 @Composable
 fun MyApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
@@ -58,6 +65,8 @@ fun MyApp(modifier: Modifier = Modifier) {
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
             modifier = Modifier
+                .fillMaxSize()
+                .padding(WindowInsets.systemBars.asPaddingValues())
         ) {
             composable("home") { HomeScreen() }
             composable("map") { MapScreen() }
