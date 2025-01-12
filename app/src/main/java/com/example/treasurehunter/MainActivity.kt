@@ -16,8 +16,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.treasurehunter.ui.screen.CreateRoomScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
-import com.example.treasurehunter.ui.theme.TreasureHunterTheme
+//import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 
@@ -36,9 +37,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            TreasureHunterTheme {
-                MyApp()
-            }
+
+//            TreasureHunterTheme {
+//                MyApp()
+//            }
+            MyApp()
         }
     }
 }
@@ -59,8 +62,15 @@ fun MyApp(modifier: Modifier = Modifier) {
             exitTransition = { ExitTransition.None },
             modifier = Modifier
         ) {
-            composable("home") { HomeScreen() }
+            composable("home") {
+                HomeScreen(
+//                    onNavigateToCreateRoom = { navController.navigate("create room") },
+//                    onNavigateToMap = { navController.navigate("map") }
+                )
+            }
             composable("map") { MapScreen() }
+            composable("createRoom") { CreateRoomScreen(navController = navController) }
+
         }
     }
 }

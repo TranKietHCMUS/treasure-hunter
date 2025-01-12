@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-//import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,8 +21,7 @@ import com.example.treasurehunter.R
 
 @Composable
 fun CreateRoomScreen(navController: NavController) {
-    var selectedPlayer by remember { mutableStateOf(0) }
-    var selectedMap by remember { mutableStateOf(0) }
+    var selectedRadius by remember { mutableStateOf(0) } // Lưu lựa chọn bán kính
 
     Box(
         modifier = Modifier
@@ -46,11 +43,10 @@ fun CreateRoomScreen(navController: NavController) {
         ) {
             Logo()
             Title(text = "Create Room")
-            PlayerSelection(selectedPlayer = selectedPlayer) { selectedPlayer = it }
-            MapSelection(selectedMap = selectedMap) { selectedMap = it }
+            RadiusSelection(selectedRadius = selectedRadius) { selectedRadius = it } // Chọn bán kính
             Spacer(modifier = Modifier.height(24.dp))
             CreateButton(onClick = {
-                // TODO: Add logic to create room
+                // TODO: Thêm logic tạo phòng với bán kính đã chọn
             })
         }
     }
@@ -62,7 +58,6 @@ fun BackButton(onBackPress: () -> Unit) {
         onClick = { onBackPress() },
         modifier = Modifier
             .padding(16.dp)
-//            .align(Alignment.TopStart),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.arrow_back),
@@ -78,8 +73,7 @@ fun Logo() {
         painter = painterResource(id = R.drawable.logotitle),
         contentDescription = "Logo",
         modifier = Modifier
-            .size(120.dp)
-            .padding(bottom = 16.dp)
+            .size(250.dp)
     )
 }
 
@@ -95,103 +89,46 @@ fun Title(text: String) {
 }
 
 @Composable
-fun PlayerSelection(selectedPlayer: Int, onPlayerSelected: (Int) -> Unit) {
+fun RadiusSelection(selectedRadius: Int, onRadiusSelected: (Int) -> Unit) {
     Text(
-        text = "Players",
+        text = "Select Radius",
         fontSize = 18.sp,
         fontWeight = FontWeight.Bold,
         color = Color.Black,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 26.dp)
     )
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        listOf(5, 10, 15).forEachIndexed { index, number ->
-            PlayerButton(
-                number = number,
-                isSelected = selectedPlayer == index,
-                onClick = { onPlayerSelected(index) }
+        val radii = listOf("1km", "2km", "5km") // Danh sách bán kính
+
+        radii.forEachIndexed { index, radius ->
+            RadiusButton(
+                text = radius,
+                isSelected = selectedRadius == index,
+                onClick = { onRadiusSelected(index) }
             )
         }
     }
 }
 
 @Composable
-fun MapSelection(selectedMap: Int, onMapSelected: (Int) -> Unit) {
-    Text(
-        text = "Maps",
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
-        color = Color.Black,
-        modifier = Modifier.padding(bottom = 8.dp)
-    )
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        val maps = listOf("Hue", "Binh Phuoc", "TP.Ho Chi Minh")
-        val drawableIds = listOf(R.drawable.hue, R.drawable.binhphuoc, R.drawable.tphochiminh)
-
-        maps.forEachIndexed { index, text ->
-            MapButton(
-                text = text,
-                isSelected = selectedMap == index,
-                drawableId = drawableIds[index],
-                onClick = { onMapSelected(index) }
-            )
-        }
-    }
-}
-
-@Composable
-fun PlayerButton(number: Int, isSelected: Boolean, onClick: () -> Unit) {
+fun RadiusButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .width(60.dp)
-            .height(45.dp)
-            .clip(RoundedCornerShape(5.dp))
-            .background(if (isSelected) Color(0xFFFF6D2E) else Color.White)
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = number.toString(),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = if (isSelected) Color.White else Color.Black
-        )
-    }
-}
-
-@Composable
-fun MapButton(text: String, isSelected: Boolean, drawableId: Int, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(100.dp)
+            .width(80.dp)
+            .height(50.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(if (isSelected) Color(0xFFFF6D2E) else Color.White)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(id = drawableId),
-            contentDescription = text,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(Color(0xAA000000))
-            )
-        }
         Text(
             text = text,
-            fontSize = 14.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = if (isSelected) Color.White else Color.Black
         )
     }
 }
