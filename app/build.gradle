@@ -110,6 +110,9 @@ dependencies {
     implementation(libs.material3)
 
     implementation(libs.androidx.navigation.compose.v277)
+
+    // Lottie
+    implementation(libs.lottie.compose)
 }
 
 kapt {
