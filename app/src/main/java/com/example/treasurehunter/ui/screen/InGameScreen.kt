@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.treasurehunter.data.model.ScreenMode
 import com.example.treasurehunter.data.viewModel.InGameViewModel
+import com.example.treasurehunter.ui.component.BottomNavigate
 
 data class NavItem(
     val label : String,
@@ -28,27 +29,10 @@ data class NavItem(
 @Preview
 @Composable
 fun InGameScreen() {
-    val navItemList = listOf(
-        NavItem("Map", Icons.Default.Home, ScreenMode.MAP),
-        NavItem("AR", Icons.Filled.Person, ScreenMode.AR),
-        NavItem("Puzzle", Icons.Filled.Create, ScreenMode.PUZZLE),
-    )
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            NavigationBar {
-                navItemList.forEach { navItem ->
-                    NavigationBarItem(
-                        icon = { Icon(navItem.icon, contentDescription = "Icon") },
-                        label = { Text(navItem.label) },
-                        selected = (navItem.mode == InGameViewModel.screenMode),
-                        onClick = {
-                            InGameViewModel.changeScreenMode(navItem.mode)
-                        }
-                    )
-                }
-            }
+            BottomNavigate()
         }
     ) {
         innerPadding ->
