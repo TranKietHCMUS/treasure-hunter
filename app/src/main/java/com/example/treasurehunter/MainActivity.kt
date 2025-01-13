@@ -2,20 +2,28 @@ package com.example.treasurehunter
 
 import MapScreen
 import android.app.Application
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.treasurehunter.geospatial.GeospatialActivity
+import com.example.treasurehunter.geospatial.MyPage  // Added import
 import com.example.treasurehunter.ui.screen.HomeScreen
 import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,7 +45,18 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TreasureHunterTheme {
-                MyApp()
+                MyApp(
+                    onARButtonClick = {
+                        try {
+                            val intent = Intent(this, GeospatialActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                        }
+                        catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                )
             }
         }
     }
@@ -48,7 +67,7 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 }
 
 @Composable
-fun MyApp(modifier: Modifier = Modifier) {
+fun MyApp(onARButtonClick: () -> Unit, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
     CompositionLocalProvider(LocalNavController provides navController) {
@@ -57,9 +76,21 @@ fun MyApp(modifier: Modifier = Modifier) {
             startDestination = "home",
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
-            modifier = Modifier
+            modifier = Modifier.fillMaxSize()
         ) {
-            composable("home") { HomeScreen() }
+            composable("home") {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    HomeScreen()
+                    Button(
+                        onClick = onARButtonClick
+                    ) {
+                        Text("Start AR Experience")
+                    }
+                }
+            }
             composable("map") { MapScreen() }
         }
     }
