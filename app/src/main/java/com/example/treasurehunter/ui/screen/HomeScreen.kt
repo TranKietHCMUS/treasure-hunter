@@ -25,7 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.treasurehunter.R
 import com.example.treasurehunter.LocalNavController
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 
+@Preview
 @Composable
 fun HomeScreen() {
     val navController = LocalNavController.current // Sử dụng để điều hướng giữa các màn hình.

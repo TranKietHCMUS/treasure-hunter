@@ -7,14 +7,14 @@ plugins {
 }
 
 android {
-    namespace 'com.example.treasurehunter'
+    namespace "com.example.treasurehunter"
     compileSdk 35
 
     def mapApiKey = project.findProperty("MAPS_API_KEY") ?: ""
 
     defaultConfig {
         applicationId "com.example.treasurehunter"
-        minSdk 24
+        minSdk 28
         targetSdk 34
         versionCode 1
         versionName "1.0"
@@ -57,7 +57,7 @@ android {
     }
     packaging {
         resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            it.excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 }
@@ -87,17 +87,33 @@ dependencies {
     kapt(libs.hilt.android.compiler)
     implementation libs.androidx.hilt.navigation.compose
 
+    // Google AR
+    implementation libs.core
+    implementation libs.play.services.auth
+    implementation libs.material
+
+    // Obj - a simple Wavefront OBJ file loader
+    // https://github.com/javagl/Obj
+    implementation libs.obj
+
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.concurrent.futures
+    implementation libs.guava
+
     // Google Maps
-    implementation("com.google.maps.android:maps-compose:4.3.0")
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps.v1900)
 
     // Location Services
-    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation(libs.play.services.location.v2101)
 
     // Jetpack Compose
-    implementation("androidx.compose.material3:material3:1.2.0")
+    implementation(libs.material3)
 
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.androidx.navigation.compose.v277)
+
+    // Lottie
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
 }
 
 kapt {
