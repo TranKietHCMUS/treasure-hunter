@@ -4,4 +4,5 @@ enum class ScreenMode {
     MAP,
     AR,
     PUZZLE,
+    TEST
 }
