@@ -112,7 +112,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose.v277)
 
     // Lottie
-    implementation(libs.lottie.compose)
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
 }
 
 kapt {
