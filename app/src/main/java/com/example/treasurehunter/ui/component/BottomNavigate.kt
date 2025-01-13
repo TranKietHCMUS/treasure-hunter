@@ -11,7 +11,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.example.treasurehunter.data.model.ScreenMode
-import com.example.treasurehunter.data.viewModel.InGameViewModel
+import com.example.treasurehunter.data.viewModel.GameViewModel
 import com.example.treasurehunter.ui.screen.NavItem
 
 @Composable
@@ -28,9 +28,9 @@ fun BottomNavigate() {
             NavigationBarItem(
                 icon = { Icon(navItem.icon, contentDescription = "Icon") },
                 label = { Text(navItem.label) },
-                selected = (navItem.mode == InGameViewModel.screenMode),
+                selected = (navItem.mode == GameViewModel.screenMode),
                 onClick = {
-                    InGameViewModel.changeScreenMode(navItem.mode)
+                    GameViewModel.changeScreenMode(navItem.mode)
                 }
             )
         }

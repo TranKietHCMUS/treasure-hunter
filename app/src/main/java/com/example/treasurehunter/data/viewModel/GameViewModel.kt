@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.example.treasurehunter.data.model.ScreenMode
 import javax.inject.Inject
 
-class InGameViewModel @Inject constructor() : ViewModel()  {
+class GameViewModel @Inject constructor() : ViewModel()  {
     companion object {
         var screenMode by mutableStateOf(ScreenMode.MAP)
 
