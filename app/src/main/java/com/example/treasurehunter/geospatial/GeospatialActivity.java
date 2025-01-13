@@ -156,7 +156,7 @@ public class GeospatialActivity extends AppCompatActivity
     /** The Session has started, but {@link \Earth} isn't {@link \TrackingState.TRACKING} yet. */
     PRETRACKING,
     /**
-     * {@link Earth} is {@link \TrackingState.TRACKING}, but the desired positioning confidence
+     * {@link \Earth} is {@link \TrackingState.TRACKING}, but the desired positioning confidence
      * hasn't been reached yet.
      */
     LOCALIZING,

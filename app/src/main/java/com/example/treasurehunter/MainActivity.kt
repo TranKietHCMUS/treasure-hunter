@@ -11,8 +11,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
@@ -28,10 +34,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.treasurehunter.geospatial.GeospatialActivity
-import com.example.treasurehunter.geospatial.MyPage  // Added import
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
 import com.example.treasurehunter.ui.component.OpenChest
+import com.example.treasurehunter.geospatial.GeospatialActivity
+import com.example.treasurehunter.geospatial.MyPage  // Added import
+import com.example.treasurehunter.ui.screen.ARScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
 import com.example.treasurehunter.ui.screen.TestScreen
 import com.example.treasurehunter.ui.theme.TreasureHunterTheme
@@ -55,18 +62,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TreasureHunterTheme {
-                MyApp(
-                    onARButtonClick = {
-                        try {
-                            val intent = Intent(this, GeospatialActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(intent)
-                        }
-                        catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                )
+                MyApp()
             }
         }
     }
@@ -77,36 +73,24 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 }
 
 @Composable
-fun MyApp(onARButtonClick: () -> Unit, modifier: Modifier = Modifier) {
+fun MyApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
     Box(modifier = modifier.fillMaxSize()) {
         CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "ar",
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(WindowInsets.systemBars.asPaddingValues())
             ) {
-                composable("home") {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        HomeScreen()
-                        Button(
-                            onClick = onARButtonClick
-                        ) {
-                            Text("Start AR Experience")
-                        }
-                    }
-                }
+                composable("home") { HomeScreen() }
                 composable("map") { MapScreen() }
                 composable("test") { TestScreen() }
-
+                composable("ar") { ARScreen() }
             }
         }
 
