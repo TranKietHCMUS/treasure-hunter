@@ -49,6 +49,7 @@ fun ContentScreen(modifier: Modifier) {
     when (InGameViewModel.screenMode) {
         ScreenMode.MAP -> MapScreen(modifier)
         ScreenMode.AR -> ARScreen()
-        ScreenMode.PUZZLE -> TestScreen()
+        ScreenMode.PUZZLE -> PuzzleScreen()
+        ScreenMode.TEST -> TestScreen()
     }
 }

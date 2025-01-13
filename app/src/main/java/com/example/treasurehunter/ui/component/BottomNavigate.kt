@@ -1,6 +1,7 @@
 package com.example.treasurehunter.ui.component
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -19,6 +20,7 @@ fun BottomNavigate() {
         NavItem("Map", Icons.Default.Home, ScreenMode.MAP),
         NavItem("AR", Icons.Filled.Person, ScreenMode.AR),
         NavItem("Puzzle", Icons.Filled.Create, ScreenMode.PUZZLE),
+        NavItem("Test", Icons.Filled.Add, ScreenMode.TEST),
     )
 
     NavigationBar {
