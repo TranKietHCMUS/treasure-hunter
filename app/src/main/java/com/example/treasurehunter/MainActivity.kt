@@ -19,6 +19,9 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -80,7 +83,7 @@ fun MyApp(modifier: Modifier = Modifier) {
         CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = "inGame",
+                startDestination = "home",
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
                 modifier = Modifier
@@ -91,8 +94,8 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("map") { MapScreen() }
                 composable("test") { TestScreen() }
                 composable("ar") { ARScreen() }
-                composable("createRoom") { CreateRoomScreen(navController = navController) }
-                composable(route = "inGame") { InGameScreen() }
+                composable("create-room") { CreateRoomScreen() }
+                composable(route = "in-game") { InGameScreen() }
             }
         }
 
