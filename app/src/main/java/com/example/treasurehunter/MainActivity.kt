@@ -19,6 +19,9 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,12 +34,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.treasurehunter.ui.screen.CreateRoomScreen
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
 import com.example.treasurehunter.ui.component.OpenChest
 import com.example.treasurehunter.geospatial.GeospatialActivity
 import com.example.treasurehunter.geospatial.MyPage  // Added import
 import com.example.treasurehunter.ui.screen.ARScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
+import com.example.treasurehunter.ui.screen.InGameScreen
+//import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import com.example.treasurehunter.ui.screen.TestScreen
 import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -77,7 +83,7 @@ fun MyApp(modifier: Modifier = Modifier) {
         CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = "ar",
+                startDestination = "home",
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
                 modifier = Modifier
@@ -88,6 +94,8 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("map") { MapScreen() }
                 composable("test") { TestScreen() }
                 composable("ar") { ARScreen() }
+                composable("create-room") { CreateRoomScreen() }
+                composable(route = "in-game") { InGameScreen() }
             }
         }
 
