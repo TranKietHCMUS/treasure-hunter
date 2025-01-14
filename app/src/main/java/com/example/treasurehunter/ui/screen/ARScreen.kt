@@ -1,6 +1,6 @@
 package com.example.treasurehunter.ui.screen
 
-import android.util.Log
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,20 +10,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.treasurehunter.data.viewModel.TreasureViewModel
+import androidx.compose.ui.platform.LocalContext
+import com.example.treasurehunter.geospatial.GeospatialActivity
+
+val onRunClick: (android.content.Context) -> Unit = { context ->
+    val intent = Intent(context, GeospatialActivity::class.java)
+    context.startActivity(intent)
+}
 
 @Preview
 @Composable
 fun ARScreen() {
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Button(onClick = {
-            // Duy code o day nha
-        }) {
+        Button(onClick = { onRunClick(context) }) {
             Text("Run")
         }
     }
