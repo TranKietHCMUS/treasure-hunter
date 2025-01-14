@@ -11,10 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.LocalContext
-import com.example.treasurehunter.geospatial.GeospatialActivity
+import com.example.treasurehunter.geospatial.ARActivity
 
 val onRunClick: (android.content.Context) -> Unit = { context ->
-    val intent = Intent(context, GeospatialActivity::class.java)
+    val intent = Intent(context, ARActivity::class.java)
     context.startActivity(intent)
 }
 
