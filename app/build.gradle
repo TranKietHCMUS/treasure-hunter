@@ -10,7 +10,7 @@ android {
     namespace "com.example.treasurehunter"
     compileSdk 35
 
-    def mapApiKey = project.findProperty("MAPS_API_KEY") ?: ""
+    def mapApiKey = project.hasProperty("MAPS_API_KEY") ? project.property("MAPS_API_KEY") : ""
 
     defaultConfig {
         applicationId "com.example.treasurehunter"
