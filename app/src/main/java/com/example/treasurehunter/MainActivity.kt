@@ -83,7 +83,7 @@ fun MyApp(modifier: Modifier = Modifier) {
         CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = "inGame",
+                startDestination = "home",
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
                 modifier = Modifier
@@ -94,8 +94,8 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("map") { MapScreen() }
                 composable("test") { TestScreen() }
                 composable("ar") { ARScreen() }
-                composable("createRoom") { CreateRoomScreen(navController = navController) }
-                composable(route = "inGame") { InGameScreen() }
+                composable("create-room") { CreateRoomScreen() }
+                composable(route = "in-game") { InGameScreen() }
             }
         }
 

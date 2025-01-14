@@ -1,5 +1,10 @@
 package com.example.treasurehunter.ui.screen
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,16 +17,52 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.core.content.ContextCompat
+import com.example.treasurehunter.LocalNavController
 import com.example.treasurehunter.R
+import com.example.treasurehunter.data.viewModel.GameViewModel
+import com.example.treasurehunter.ui.component.BackButton
+import com.example.treasurehunter.ui.component.Loading
+import com.example.treasurehunter.ui.component.Logo
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
 
 @Composable
-fun CreateRoomScreen(navController: NavController) {
-    var selectedRadius by remember { mutableStateOf(0) } // Lưu lựa chọn bán kính
+fun CreateRoomScreen() {
+    var selectedRadius by remember { mutableStateOf<Double?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
+
+    val navController = LocalNavController.current
+    val context = LocalContext.current
+    var currentLocation by remember { mutableStateOf<LatLng?>(null) }
+    var hasLocationPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        hasLocationPermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+    }
+
+    val fusedLocationClient = remember {
+        LocationServices.getFusedLocationProviderClient(context)
+    }
 
     Box(
         modifier = Modifier
@@ -43,38 +84,59 @@ fun CreateRoomScreen(navController: NavController) {
         ) {
             Logo()
             Title(text = "Create Room")
-            RadiusSelection(selectedRadius = selectedRadius) { selectedRadius = it } // Chọn bán kính
+            RadiusSelection(selectedRadius = selectedRadius) { selectedRadius = it }
             Spacer(modifier = Modifier.height(24.dp))
-            CreateButton(onClick = {
-                // TODO: Thêm logic tạo phòng với bán kính đã chọn
-            })
+            CreateButton(
+                isLoading = isLoading,
+                enabled = selectedRadius != null,
+                onClick = {
+                    if (hasLocationPermission) {
+                        try {
+                            isLoading = true
+                            fusedLocationClient.getCurrentLocation(
+                                Priority.PRIORITY_HIGH_ACCURACY,
+                                object : CancellationToken() {
+                                    override fun onCanceledRequested(listener: OnTokenCanceledListener) = CancellationTokenSource().token
+                                    override fun isCancellationRequested() = false
+                                }
+                            ).addOnSuccessListener { location: Location? ->
+                                isLoading = false
+                                location?.let {
+                                    val position = LatLng(it.latitude, it.longitude)
+                                    currentLocation = position
+
+                                    // Set game location and radius
+                                    GameViewModel.setGameLocation(currentLocation!!)
+                                    GameViewModel.setGameRadius(selectedRadius!!)
+                                    // navigate to InGameScreen
+                                    navController.navigate("in-game")
+                                }
+                            }.addOnFailureListener {
+                                isLoading = false
+                                // Có thể thêm xử lý lỗi ở đây
+                            }
+                        } catch (e: SecurityException) {
+                            isLoading = false
+                            hasLocationPermission = false
+                        }
+                    } else {
+                        launcher.launch(
+                            arrayOf(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+                        )
+                    }
+
+                    // Random function
+                }
+            )
+        }
+
+        if (isLoading) {
+            Loading()
         }
     }
-}
-
-@Composable
-fun BackButton(onBackPress: () -> Unit) {
-    IconButton(
-        onClick = { onBackPress() },
-        modifier = Modifier
-            .padding(16.dp)
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.arrow_back),
-            contentDescription = "Back",
-            tint = Color.Black
-        )
-    }
-}
-
-@Composable
-fun Logo() {
-    Image(
-        painter = painterResource(id = R.drawable.logotitle),
-        contentDescription = "Logo",
-        modifier = Modifier
-            .size(250.dp)
-    )
 }
 
 @Composable
@@ -89,7 +151,7 @@ fun Title(text: String) {
 }
 
 @Composable
-fun RadiusSelection(selectedRadius: Int, onRadiusSelected: (Int) -> Unit) {
+fun RadiusSelection(selectedRadius: Double?, onRadiusSelected: (Double) -> Unit) {
     Text(
         text = "Select Radius",
         fontSize = 18.sp,
@@ -101,13 +163,17 @@ fun RadiusSelection(selectedRadius: Int, onRadiusSelected: (Int) -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        val radii = listOf("1km", "2km", "5km") // Danh sách bán kính
+        val radii = listOf(
+            Pair("500m", 500.0),
+            Pair("1km", 1000.0),
+            Pair("2km", 2000.0),
+        )
 
-        radii.forEachIndexed { index, radius ->
+        radii.forEach { (text, value) ->
             RadiusButton(
-                text = radius,
-                isSelected = selectedRadius == index,
-                onClick = { onRadiusSelected(index) }
+                text = text,
+                isSelected = selectedRadius == value,
+                onClick = { onRadiusSelected(value) }
             )
         }
     }
@@ -134,10 +200,18 @@ fun RadiusButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun CreateButton(onClick: () -> Unit) {
+fun CreateButton(
+    isLoading: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
     Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF6D2E)),
+        onClick = { if (!isLoading) onClick() },
+        enabled = enabled && !isLoading,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFFF6D2E),
+            disabledContainerColor = Color.Gray
+        ),
         shape = RoundedCornerShape(30.dp),
         modifier = Modifier
             .width(150.dp)
