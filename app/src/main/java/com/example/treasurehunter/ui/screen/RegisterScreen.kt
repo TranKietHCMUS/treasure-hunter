@@ -9,12 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.treasurehunter.LocalNavController
 
 @Composable
@@ -27,13 +22,6 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
     var birthDate by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
-    // Tạo FocusRequester cho mỗi ô nhập liệu
-    val fullNameFocusRequester = FocusRequester()
-    val genderFocusRequester = FocusRequester()
-    val birthDateFocusRequester = FocusRequester()
-    val emailFocusRequester = FocusRequester()
-    val passwordFocusRequester = FocusRequester()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -41,88 +29,16 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Full Name TextField
-        TextField(
-            value = fullName,
-            onValueChange = { fullName = it },
-            label = { Text("Full Name") },
-            modifier = Modifier.focusRequester(fullNameFocusRequester)
-                .onFocusChanged {
-                    if (!it.hasFocus) {
-                        genderFocusRequester.requestFocus()
-                    }
-                }
-        )
+        TextField(value = fullName, onValueChange = { fullName = it }, label = { Text("Full Name") })
         Spacer(modifier = Modifier.height(8.dp))
-
-        // Gender TextField
-        TextField(
-            value = gender,
-            onValueChange = { gender = it },
-            label = { Text("Gender") },
-            modifier = Modifier.focusRequester(genderFocusRequester)
-                .onFocusChanged {
-                    if (!it.hasFocus) {
-                        birthDateFocusRequester.requestFocus()
-                    }
-                }
-        )
+        TextField(value = gender, onValueChange = { gender = it }, label = { Text("Gender") })
         Spacer(modifier = Modifier.height(8.dp))
-
-        // Birth Date TextField
-        TextField(
-            value = birthDate,
-            onValueChange = { birthDate = it },
-            label = { Text("Birth Date (YYYY-MM-DD)") },
-            modifier = Modifier.focusRequester(birthDateFocusRequester)
-                .onFocusChanged {
-                    if (!it.hasFocus) {
-                        emailFocusRequester.requestFocus()
-                    }
-                }
-        )
+        TextField(value = birthDate, onValueChange = { birthDate = it }, label = { Text("Birth Date (YYYY-MM-DD)") })
         Spacer(modifier = Modifier.height(8.dp))
-
-        // Email TextField
-        TextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.focusRequester(emailFocusRequester)
-                .onFocusChanged {
-                    if (!it.hasFocus) {
-                        passwordFocusRequester.requestFocus()
-                    }
-                }
-        )
+        TextField(value = email, onValueChange = { email = it }, label = { Text("Email") })
         Spacer(modifier = Modifier.height(8.dp))
-
-        // Password TextField
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier
-                .focusRequester(passwordFocusRequester)
-                .onKeyEvent {
-                    if (it.key == Key.Enter) {
-                        // Khi nhấn Enter thì đăng ký
-                        AuthViewModel.registerUser(email, password, fullName, gender, birthDate, onSuccess = {
-                            onRegisterSuccess()
-                        }, onError = {
-                            errorMessage = it
-                        })
-                        true
-                    } else {
-                        false
-                    }
-                }
-        )
-
+        TextField(value = password, onValueChange = { password = it }, label = { Text("Password") }, visualTransformation = PasswordVisualTransformation())
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Register Button
         Button(onClick = {
             AuthViewModel.registerUser(email, password, fullName, gender, birthDate, onSuccess = {
                 onRegisterSuccess()
@@ -132,15 +48,12 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
         }) {
             Text("Register")
         }
-
-        // Hiển thị thông báo lỗi nếu có
         if (errorMessage.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(errorMessage, color = Color.Red)
         }
 
-        // Dẫn đến màn hình đăng nhập
-        TextButton(onClick = { navController.navigate("login") }) {
+        TextButton(onClick = {navController.navigate("login")}) {
             Text("Đã có tài khoản? Đăng nhập ngay!")
         }
     }
