@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "103618681232",
+    "project_id": "treasurehunter-75567",
+    "storage_bucket": "treasurehunter-75567.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103618681232:android:7128e8c2342c531dbd7b15",
+        "android_client_info": {
+          "package_name": "com.example.treasurehunter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkk0lJTnD9n__uyMEVX4iCdcQmU6sctXY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
