@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import com.example.treasurehunter.LocalNavController
 import com.example.treasurehunter.R
 import com.example.treasurehunter.data.viewModel.GameViewModel
+import com.example.treasurehunter.data.viewModel.PuzzleViewModel
 import com.example.treasurehunter.ui.component.BackButton
 import com.example.treasurehunter.ui.component.Loading
 import com.example.treasurehunter.ui.component.Logo
@@ -210,7 +211,10 @@ fun CreateButton(
     onClick: () -> Unit
 ) {
     Button(
-        onClick = { if (!isLoading) onClick() },
+        onClick = {
+            if (!isLoading) onClick()
+            PuzzleViewModel.init()
+                  },
         enabled = enabled && !isLoading,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFFFF6D2E),

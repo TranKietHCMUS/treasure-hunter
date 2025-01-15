@@ -1,15 +1,21 @@
 package com.example.treasurehunter.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,61 +27,165 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.example.treasurehunter.data.viewModel.PuzzleViewModel
 import com.example.treasurehunter.ui.theme.Orange
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.sp
+import com.example.treasurehunter.data.viewModel.ScoreViewModel
 
+@Composable
+fun InputComponent() {
+    Text(
+        modifier = Modifier.fillMaxWidth()
+            .padding(20.dp),
+        text = "You have ${PuzzleViewModel.remainSubmition} submition${if(PuzzleViewModel.remainSubmition > 1) "s" else ""} left",
+        color = Color.White,
+        fontSize = 15.sp
+    )
+
+    Text(
+        text = "Result includes ${PuzzleViewModel.correctAnswer.length} characters",
+        color = Color.White,
+        fontSize = 20.sp
+    )
+
+    Spacer(modifier = Modifier.height(10.dp))
+
+    TextField(
+        value = PuzzleViewModel.userInput, onValueChange = {
+            if (it.length <= PuzzleViewModel.correctAnswer.length) {
+                PuzzleViewModel.userInput = it.uppercase()
+            }
+        },
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Button(onClick = {
+        Log.i("Correct Answer", PuzzleViewModel.correctAnswer)
+        Log.i("User Input", PuzzleViewModel.userInput)
+        // Check the user's input
+        PuzzleViewModel.checkAnswer()
+    }) {
+        Text("Submit")
+    }
+}
+
+@Composable
+fun SolvedCoponent() {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(20.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "You solved the puzzle",
+            color = Color.White,
+            fontSize = 24.sp
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "Your claiming points will be doubled when open chest",
+            color = Color.White,
+            fontSize = 12.sp
+        )
+    }
+}
 
 @Preview
 @Composable
 fun PuzzleScreen() {
-    Box(
+    Column  (
         modifier = Modifier
             .fillMaxSize()
+            .padding(30.dp)
             .background(
-                color = Color(0xFF643000)
-            )
-    ) {
-        Column (
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = rememberImagePainter(PuzzleViewModel.imageUrl),
-                contentDescription = "Puzzle",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .size(PuzzleViewModel.imageSize)
-            )
-        }
+                color = Color(0xFF260000)
+            ),
 
-        // Show grid 3x3 images here
-        Column (
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Text(
+            text = "Your current score: ",
+            color = Color.White,
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = ScoreViewModel.score.toString(),
+            color = Color.White,
+            fontSize = 30.sp
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color(0xFF643000)
+                )
         ) {
-            for (i in 0 until 3) {
-                Row {
-                    for (j in 0 until 3) {
-                        // Hiển thị hình ảnh cho mỗi ô
-                        Box(
-                            modifier = Modifier
-                                .size(PuzzleViewModel.imageSize / 3 - 4.dp)
-                                .background(
-                                    if (PuzzleViewModel.images[i][j] == Color.Gray)
-                                        Color.White else Color.Transparent
-                                )
-                                .padding(2.dp)
-                        ) {
+            Column (
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = rememberImagePainter(PuzzleViewModel.imageUrl),
+                    contentDescription = "Puzzle",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .size(PuzzleViewModel.imageSize)
+                )
+            }
+
+            // Show grid 3x3 images here
+            Column (
+                modifier = Modifier.fillMaxWidth().padding(20.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                for (i in 0 until 3) {
+                    Row {
+                        for (j in 0 until 3) {
+                            // Hiển thị hình ảnh cho mỗi ô
                             Box(
-                                modifier =  Modifier
-                                    .fillMaxSize()
-                                    .background(PuzzleViewModel.images[i][j])
-                            ){}
+                                modifier = Modifier
+                                    .size(PuzzleViewModel.imageSize / 3 - 4.dp)
+                                    .background(
+                                        if (PuzzleViewModel.images[i][j] == Color.Gray)
+                                            Color.White else Color.Transparent
+                                    )
+                                    .padding(2.dp)
+                            ) {
+                                Box(
+                                    modifier =  Modifier
+                                        .fillMaxSize()
+                                        .background(PuzzleViewModel.images[i][j])
+                                ){}
+                            }
                         }
                     }
                 }
             }
+
         }
 
+        Spacer(modifier = Modifier.height(30.dp))
+
+        if (PuzzleViewModel.isSolved) {
+            SolvedCoponent()
+        } else {
+            InputComponent()
+        }
     }
 }
