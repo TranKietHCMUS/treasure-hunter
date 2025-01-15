@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.treasurehunter.data.model.ScreenMode
+import com.example.treasurehunter.data.model.Treasure
 import com.google.android.gms.maps.model.LatLng
 import javax.inject.Inject
 
@@ -31,22 +32,29 @@ class GameViewModel @Inject constructor() : ViewModel()  {
             _gameRadius.value = radius
         }
 
-        // Coordinates
+        // Treasures
+        private var _treasures = mutableStateOf<List<Treasure>>(emptyList())
+        val treasures: List<Treasure> get() = _treasures.value
 
-        private var _randomLocations = mutableStateOf<List<LatLng>>(emptyList())
-        val randomLocations: List<LatLng> get() = _randomLocations.value
-
-        fun generateRandomLocations(center: LatLng, radius: Double, count: Int = 9) {
-            val randomList = mutableListOf<LatLng>()
+        // Tạo danh sách các kho báu từ tọa độ ngẫu nhiên
+        fun generateTreasures(center: LatLng, radius: Double, count: Int = 9) {
+            val treasureList = mutableListOf<Treasure>()
             for (i in 1..count) {
                 val randomPoint = generateRandomLocation(center, radius)
-                randomList.add(randomPoint)
+                treasureList.add(Treasure(location = randomPoint))
             }
-            _randomLocations.value = randomList
+            _treasures.value = treasureList
 
-            // Log các tọa độ đã tạo
-            randomList.forEachIndexed { index, latLng ->
-                Log.d("RandomLocation", "Location $index: (${latLng.latitude}, ${latLng.longitude})")
+            // Log tọa độ kho báu đã tạo
+            treasureList.forEachIndexed { index, treasure ->
+                Log.d("Treasure", "Treasure $index: (${treasure.location.latitude}, ${treasure.location.longitude})")
+            }
+        }
+
+        // Đánh dấu kho báu đã tìm thấy
+        fun markTreasureAsFound(location: LatLng) {
+            _treasures.value = _treasures.value.map {
+                if (it.location == location) it.copy(found = true) else it
             }
         }
 

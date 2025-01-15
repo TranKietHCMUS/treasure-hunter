@@ -15,7 +15,7 @@ fun MapScreen(
     val gameLocation = GameViewModel.gameLocation
     val gameRadius = GameViewModel.gameRadius
     val cameraPositionState = rememberCameraPositionState()
-    val randomLocations = GameViewModel.randomLocations
+//    val randomLocations = GameViewModel.randomLocations
 
     // Di chuyển camera đến vị trí game khi có vị trí
     LaunchedEffect(gameLocation) {
@@ -47,12 +47,19 @@ fun MapScreen(
                 )
 
                 // Hiển thị các tọa độ ngẫu nhiên là các chấm đỏ
-                randomLocations.forEach { location ->
-                    Marker(
-                        state = MarkerState(position = location),
-                        title = "Random Location",
-                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
-                    )
+                GameViewModel.treasures.forEachIndexed { index, treasure ->
+                    if (!treasure.found) {
+                        Marker(
+                            state = MarkerState(position = treasure.location),
+                            title = "Kho báu $index",
+                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED),
+                            onClick = {
+                                // Đánh dấu kho báu này là "đã tìm thấy"
+                                GameViewModel.markTreasureAsFound(treasure.location)
+                                true // Xử lý sự kiện nhấn marker
+                            }
+                        )
+                    }
                 }
             }
         } else {
