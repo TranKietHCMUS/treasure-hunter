@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class LocationViewModel @Inject constructor() : ViewModel() {
     companion object {
-        private var _listCoordinates = mutableStateOf<List<Pair<Double, Double>>>(
+        var _listCoordinates = mutableStateOf<List<Pair<Double, Double>>>(
             listOf(
                 Pair(10.7481774, 106.704646),
                 Pair(10.748627060802958, 106.704646),
