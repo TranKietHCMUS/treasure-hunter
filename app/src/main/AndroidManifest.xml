@@ -49,14 +49,7 @@
         </activity>
 
         <activity
-            android:name=".geospatial.MyPage"
-            android:exported="true"
-            android:label="My Page"
-            android:theme="@style/Theme.AppCompat"
-            />
-
-        <activity
-            android:name="com.example.treasurehunter.geospatial.GeospatialActivity"
+            android:name="com.example.treasurehunter.geospatial.ARActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.NoActionBar"

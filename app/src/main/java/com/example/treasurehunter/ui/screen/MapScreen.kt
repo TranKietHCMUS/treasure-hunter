@@ -15,6 +15,7 @@ fun MapScreen(
     val gameLocation = GameViewModel.gameLocation
     val gameRadius = GameViewModel.gameRadius
     val cameraPositionState = rememberCameraPositionState()
+    val randomLocations = GameViewModel.randomLocations
 
     // Di chuyển camera đến vị trí game khi có vị trí
     LaunchedEffect(gameLocation) {
@@ -44,6 +45,15 @@ fun MapScreen(
                     strokeColor = Color(0xFFFF6D2E),
                     strokeWidth = 2f,
                 )
+
+                // Hiển thị các tọa độ ngẫu nhiên là các chấm đỏ
+                randomLocations.forEach { location ->
+                    Marker(
+                        state = MarkerState(position = location),
+                        title = "Random Location",
+                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                    )
+                }
             }
         } else {
             // Hiển thị thông báo nếu chưa có vị trí
