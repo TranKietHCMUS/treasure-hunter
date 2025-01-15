@@ -29,6 +29,8 @@ obj = "0.4.0"
 playServicesAuth = "21.3.0"
 playServicesLocation = "21.0.1"
 playServicesMaps = "19.0.0"
+firebaseDatabaseKtx = "21.0.0"
+firebaseFirestoreKtx = "25.1.1"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -67,6 +69,8 @@ obj = { module = "de.javagl:obj", version.ref = "obj" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 play-services-location-v2101 = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 play-services-maps-v1900 = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
