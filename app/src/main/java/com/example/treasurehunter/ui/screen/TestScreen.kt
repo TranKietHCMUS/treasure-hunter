@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.treasurehunter.data.viewModel.PuzzleViewModel
+import com.example.treasurehunter.data.viewModel.ScoreViewModel
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
 
 @Preview
@@ -24,8 +25,7 @@ fun TestScreen() {
     ) {
         Button(onClick = {
             Log.i("MainActivity", "Click open")
-            TreasureViewModel.showChest()
-            PuzzleViewModel.showPiece()
+            TreasureViewModel.openChest()
         }) {
             Text("Open")
         }

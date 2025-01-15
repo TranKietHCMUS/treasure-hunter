@@ -12,6 +12,7 @@ import kotlin.random.Random
 
 class PuzzleViewModel @Inject constructor() : ViewModel() {
     companion object {
+        // Puzzle image
         val imageSize = 300.dp
 
         private val imageUrlList = listOf(
@@ -20,12 +21,6 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
         var imageUrl by mutableStateOf(imageUrlList[0])
         var images by mutableStateOf(Array(3) { Array(3) { Color.Gray } })
 
-        fun init() {
-            images = Array(3) { Array(3) { Color.Gray } }
-
-            val randomIndex = imageUrlList.indices.random()
-            imageUrl = imageUrlList[randomIndex]
-        }
 
         fun showPiece() {
             val grayPieces = mutableListOf<Pair<Int, Int>>()
@@ -43,6 +38,36 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
                 val selectedPiece = grayPieces[randomIndex]
 
                 images[selectedPiece.first][selectedPiece.second] = Color.Transparent
+            }
+        }
+
+        // Puzzle result
+        var userInput by mutableStateOf("")
+        private val resultList = listOf(
+            "HCMUS"
+        )
+        var correctAnswer by mutableStateOf(resultList[0])
+
+        var isSolved by mutableStateOf(false)
+        var remainSubmition by mutableStateOf(3)
+
+        fun init() {
+            images = Array(3) { Array(3) { Color.Gray } }
+
+            val randomIndex = imageUrlList.indices.random()
+            imageUrl = imageUrlList[randomIndex]
+            correctAnswer = resultList[randomIndex]
+            userInput = ""
+            isSolved = false
+            remainSubmition = 3
+        }
+
+        fun checkAnswer() {
+            if (userInput == correctAnswer) {
+                isSolved = true
+            } else {
+                remainSubmition--
+                userInput = ""
             }
         }
     }
