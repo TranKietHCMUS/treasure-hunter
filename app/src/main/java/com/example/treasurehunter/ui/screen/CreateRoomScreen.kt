@@ -108,6 +108,10 @@ fun CreateRoomScreen() {
                                     // Set game location and radius
                                     GameViewModel.setGameLocation(currentLocation!!)
                                     GameViewModel.setGameRadius(selectedRadius!!)
+
+                                    // Generate random locations
+                                    GameViewModel.generateRandomLocations(currentLocation!!, selectedRadius!!)
+
                                     // navigate to InGameScreen
                                     navController.navigate("in-game")
                                 }
