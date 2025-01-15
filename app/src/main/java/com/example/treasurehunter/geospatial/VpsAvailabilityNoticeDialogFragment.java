@@ -20,9 +20,9 @@ import com.example.treasurehunter.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 /** A DialogFragment for the VPS availability Notice Dialog Box. */
@@ -38,12 +38,11 @@ public class VpsAvailabilityNoticeDialogFragment extends DialogFragment {
   NoticeDialogListener noticeDialogListener;
 
   static VpsAvailabilityNoticeDialogFragment createDialog() {
-    VpsAvailabilityNoticeDialogFragment dialogFragment = new VpsAvailabilityNoticeDialogFragment();
-    return dialogFragment;
+      return new VpsAvailabilityNoticeDialogFragment();
   }
 
   @Override
-  public void onAttach(Context context) {
+  public void onAttach(@NonNull Context context) {
     super.onAttach(context);
     // Verify that the host activity implements the callback interface
     try {
@@ -59,6 +58,7 @@ public class VpsAvailabilityNoticeDialogFragment extends DialogFragment {
     noticeDialogListener = null;
   }
 
+  @NonNull
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogCustom);
@@ -68,14 +68,11 @@ public class VpsAvailabilityNoticeDialogFragment extends DialogFragment {
         .setCancelable(false)
         .setPositiveButton(
             R.string.continue_button,
-            new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int id) {
-                // Send the positive button event back to the host activity
-                noticeDialogListener.onDialogContinueClick(
-                    VpsAvailabilityNoticeDialogFragment.this);
-              }
-            });
+                (dialog, id) -> {
+                  // Send the positive button event back to the host activity
+                  noticeDialogListener.onDialogContinueClick(
+                      VpsAvailabilityNoticeDialogFragment.this);
+                });
     Dialog dialog = builder.create();
     dialog.setCanceledOnTouchOutside(false);
     return dialog;

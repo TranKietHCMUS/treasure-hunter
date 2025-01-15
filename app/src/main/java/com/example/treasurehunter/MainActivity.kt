@@ -38,7 +38,6 @@ import com.example.treasurehunter.ui.screen.CreateRoomScreen
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
 import com.example.treasurehunter.ui.component.OpenChest
 import com.example.treasurehunter.geospatial.GeospatialActivity
-import com.example.treasurehunter.geospatial.MyPage  // Added import
 import com.example.treasurehunter.ui.screen.ARScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
 import com.example.treasurehunter.ui.screen.InGameScreen

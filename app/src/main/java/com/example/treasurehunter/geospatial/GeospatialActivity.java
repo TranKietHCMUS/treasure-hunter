@@ -636,6 +636,23 @@ public class GeospatialActivity extends AppCompatActivity
       return;
     }
 
+    // Set up anchor place, test: 1 anchor near home
+    try {
+      double latitude = 10.7482551;
+      double longitude = 106.7047020;
+      double altitude = 0; // Default altitude; you can allow user input for this too
+
+      Earth earth = session.getEarth();
+      if (earth != null && earth.getTrackingState() == TrackingState.TRACKING) {
+        float[] quaternion = {0, 0, 0, 1}; // Default orientation
+        createAnchor(earth, latitude, longitude, altitude, quaternion);
+      } else {
+        Log.e(TAG, "Earth is not tracking. Cannot place anchor.");
+      }
+    } catch (NumberFormatException e) {
+      Toast.makeText(this, "Invalid coordinates", Toast.LENGTH_SHORT).show();
+    }
+
     // Texture names should only be set once on a GL thread unless they change. This is done during
     // onDrawFrame rather than onSurfaceCreated since the session is not guaranteed to have been
     // initialized during the execution of onSurfaceCreated.
