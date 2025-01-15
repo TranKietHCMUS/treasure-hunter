@@ -2,12 +2,14 @@ package com.example.app.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.treasurehunter.data.model.Gender
 import com.example.treasurehunter.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class AuthViewModel : ViewModel() {
     companion object {
@@ -23,8 +25,8 @@ class AuthViewModel : ViewModel() {
             email: String,
             password: String,
             fullName: String,
-            gender: String,
-            birthDate: String,
+            gender: Gender,
+            dob: Date,
             onSuccess: () -> Unit,
             onError: (String) -> Unit
         ) {
@@ -32,10 +34,17 @@ class AuthViewModel : ViewModel() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val uid = auth.currentUser?.uid ?: return@addOnCompleteListener
-                        val user = User(uid, fullName, gender, birthDate)
+                        val userData = hashMapOf(
+                            "uid" to uid,
+                            "fullName" to fullName,
+                            "gender" to gender.name, // Lưu enum dưới dạng String
+                            "dob" to dob,
+                            "highestScore" to 0
+                        )
 
-                        db.collection(USERS_COLLECTION).document(uid).set(user)
+                        db.collection(USERS_COLLECTION).document(uid).set(userData)
                             .addOnSuccessListener {
+                                val user = User(uid, fullName, gender, dob)
                                 _currentUser.value = user
                                 onSuccess()
                             }
@@ -61,9 +70,25 @@ class AuthViewModel : ViewModel() {
                         db.collection(USERS_COLLECTION).document(uid).get()
                             .addOnSuccessListener { document ->
                                 if (document.exists()) {
-                                    val user = document.toObject(User::class.java)
-                                    _currentUser.value = user
-                                    onSuccess()
+                                    try {
+                                        // Tạo user object từ document data
+                                        val data = document.data
+                                        if (data != null) {
+                                            val user = User(
+                                                uid = data["uid"] as? String ?: "",
+                                                fullName = data["fullName"] as? String ?: "",
+                                                gender = Gender.fromString(data["gender"] as? String),
+                                                dob = (data["dob"] as? Date) ?: Date(),
+                                                highestScore = (data["highestScore"] as? Long)?.toInt() ?: 0
+                                            )
+                                            _currentUser.value = user
+                                            onSuccess()
+                                        } else {
+                                            onError("Invalid user data")
+                                        }
+                                    } catch (e: Exception) {
+                                        onError("Error parsing user data: ${e.message}")
+                                    }
                                 } else {
                                     onError("User not found")
                                 }
@@ -78,10 +103,7 @@ class AuthViewModel : ViewModel() {
         }
 
         fun logoutUser() {
-            // Đăng xuất khỏi Firebase Auth
             auth.signOut()
-
-            // Cập nhật currentUser thành null khi người dùng đăng xuất
             _currentUser.value = null
         }
     }

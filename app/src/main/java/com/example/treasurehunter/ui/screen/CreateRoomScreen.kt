@@ -111,7 +111,7 @@ fun CreateRoomScreen() {
                                     GameViewModel.setGameRadius(selectedRadius!!)
 
                                     // Generate random locations
-                                    GameViewModel.generateRandomLocations(currentLocation!!, selectedRadius!!)
+                                    GameViewModel.generateTreasures(currentLocation!!, selectedRadius!!)
 
                                     // navigate to InGameScreen
                                     navController.navigate("in-game")
@@ -133,7 +133,6 @@ fun CreateRoomScreen() {
                         )
                     }
 
-                    // Random function
                 }
             )
         }

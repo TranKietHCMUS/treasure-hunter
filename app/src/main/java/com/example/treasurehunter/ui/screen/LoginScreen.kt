@@ -30,7 +30,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
     ) {
         TextField(value = email, onValueChange = { email = it }, label = { Text("Email") })
         Spacer(modifier = Modifier.height(8.dp))
-        TextField(value = password, onValueChange = { password = it }, label = { Text("Password") }, visualTransformation = PasswordVisualTransformation())
+        TextField(value = password, onValueChange = { password = it }, label = { Text("Mật khẩu") }, visualTransformation = PasswordVisualTransformation())
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
             AuthViewModel.loginUser(email, password, onSuccess = {
@@ -38,8 +38,10 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             }, onError = {
                 errorMessage = it
             })
-        }) {
-            Text("Login")
+        },
+            enabled = email.isNotEmpty() && password.isNotEmpty()
+        ) {
+            Text("Đăng nhập")
         }
         if (errorMessage.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
