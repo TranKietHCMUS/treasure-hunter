@@ -48,18 +48,6 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
         )
         var correctAnswer by mutableStateOf(resultList[0])
 
-        fun isFinished(): Boolean {
-            for (i in images.indices) {
-                for (j in images[i].indices) {
-                    if (images[i][j] != Color.Transparent) {
-                        return false
-                    }
-                }
-            }
-
-            return true
-        }
-
         var isSolved by mutableStateOf(false)
         var remainSubmition by mutableStateOf(3)
 

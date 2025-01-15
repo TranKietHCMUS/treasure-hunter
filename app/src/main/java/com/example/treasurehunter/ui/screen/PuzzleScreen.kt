@@ -82,9 +82,17 @@ fun SolvedCoponent() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "You solved the puzzle",
+            text = "You solved the puzzle:",
             color = Color.White,
-            fontSize = 24.sp
+            fontSize = 20.sp
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "${PuzzleViewModel.correctAnswer}",
+            color = Color.White,
+            fontSize = 30.sp
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -139,6 +147,21 @@ fun PuzzleScreen() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(20.dp))
+                Box(
+                    modifier = Modifier
+                        .size(PuzzleViewModel.imageSize)
+                        .background(
+                            Color(0xFFFFFFFF)
+                        )
+                )
+            }
+
+            Column (
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Image(
                     painter = rememberImagePainter(PuzzleViewModel.imageUrl),
                     contentDescription = "Puzzle",
@@ -148,7 +171,7 @@ fun PuzzleScreen() {
                 )
             }
 
-            // Show grid 3x3 images here
+//             Show grid 3x3 images here
             Column (
                 modifier = Modifier.fillMaxWidth().padding(20.dp),
                 verticalArrangement = Arrangement.Center,
@@ -160,7 +183,7 @@ fun PuzzleScreen() {
                             // Hiển thị hình ảnh cho mỗi ô
                             Box(
                                 modifier = Modifier
-                                    .size(PuzzleViewModel.imageSize / 3 - 4.dp)
+                                    .size(PuzzleViewModel.imageSize / 3)
                                     .background(
                                         if (PuzzleViewModel.images[i][j] == Color.Gray)
                                             Color.White else Color.Transparent
@@ -180,7 +203,7 @@ fun PuzzleScreen() {
 
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         if (PuzzleViewModel.isSolved) {
             SolvedCoponent()

@@ -9,7 +9,7 @@ class ScoreViewModel @Inject constructor() : ViewModel() {
 
         fun increaseScore() {
             score += 1;
-            if (PuzzleViewModel.isFinished()) {
+            if (PuzzleViewModel.isSolved) {
                 score += 1;
             }
         }
