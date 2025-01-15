@@ -38,7 +38,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
             }, onError = {
                 errorMessage = it
             })
-        }) {
+        },
+            enabled = email.isNotEmpty() && password.isNotEmpty()
+        ) {
             Text("Đăng nhập")
         }
         if (errorMessage.isNotEmpty()) {
