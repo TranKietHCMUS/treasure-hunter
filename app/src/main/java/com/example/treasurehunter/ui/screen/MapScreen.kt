@@ -75,20 +75,20 @@ fun MapScreen(
                 )
 
                 // Hiển thị các tọa độ ngẫu nhiên là các chấm đỏ
-//                GameViewModel.treasures.forEachIndexed { index, treasure ->
-//                    if (!treasure.found) {
-//                        Marker(
-//                            state = MarkerState(position = treasure.location),
-//                            title = "Kho báu $index",
-//                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED),
-//                            onClick = {
-//                                // Đánh dấu kho báu này là "đã tìm thấy"
-//                                GameViewModel.markTreasureAsFound(treasure.location)
-//                                true // Xử lý sự kiện nhấn marker
-//                            }
-//                        )
-//                    }
-//                }
+                GameViewModel.treasures.forEachIndexed { index, treasure ->
+                    if (!treasure.found) {
+                        Marker(
+                            state = MarkerState(position = treasure.location),
+                            title = "Kho báu $index",
+                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED),
+                            onClick = {
+                                // Đánh dấu kho báu này là "đã tìm thấy"
+                                GameViewModel.markTreasureAsFound(treasure.location)
+                                true // Xử lý sự kiện nhấn marker
+                            }
+                        )
+                    }
+                }
 
                 currentUserLocation?.let {
                     Log.d("MapScreen", "Current user location: $it")
