@@ -43,6 +43,12 @@ fun MapScreen(
         )
     }
 
+    // Gọi startTrackingUserLocation để cập nhật vị trí liên tục
+    LaunchedEffect(context) {
+        GameViewModel.startTrackingUserLocation(context) { location ->
+//            Log.d("MapScreen", "Updated user location: $location")
+        }
+    }
 
 
     // Di chuyển camera đến vị trí game khi có vị trí
@@ -75,20 +81,20 @@ fun MapScreen(
                 )
 
                 // Hiển thị các tọa độ ngẫu nhiên là các chấm đỏ
-//                GameViewModel.treasures.forEachIndexed { index, treasure ->
-//                    if (!treasure.found) {
-//                        Marker(
-//                            state = MarkerState(position = treasure.location),
-//                            title = "Kho báu $index",
-//                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED),
-//                            onClick = {
-//                                // Đánh dấu kho báu này là "đã tìm thấy"
-//                                GameViewModel.markTreasureAsFound(treasure.location)
-//                                true // Xử lý sự kiện nhấn marker
-//                            }
-//                        )
-//                    }
-//                }
+                GameViewModel.treasures.forEachIndexed { index, treasure ->
+                    if (!treasure.found) {
+                        Marker(
+                            state = MarkerState(position = treasure.location),
+                            title = "Kho báu $index",
+                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED),
+                            onClick = {
+                                // Đánh dấu kho báu này là "đã tìm thấy"
+                                GameViewModel.markTreasureAsFound(treasure.location)
+                                true // Xử lý sự kiện nhấn marker
+                            }
+                        )
+                    }
+                }
 
                 currentUserLocation?.let {
                     Log.d("MapScreen", "Current user location: $it")
