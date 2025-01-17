@@ -44,6 +44,7 @@ fun BottomNavigate() {
         NavItem("Map", lottieResId = R.raw.map_animation, mode = ScreenMode.MAP, size = 48, padding = 1),
         NavItem("AR", lottieResId = R.raw.ar_animation, mode = ScreenMode.AR, size = 44, padding = 3),
         NavItem("Puzzle", lottieResId = R.raw.puzzle_animation, mode = ScreenMode.PUZZLE, size = 50, padding = 0),
+        NavItem("Test", lottieResId = R.raw.puzzle_animation, mode = ScreenMode.TEST, size = 50, padding = 0),
     )
 
     NavigationBar(

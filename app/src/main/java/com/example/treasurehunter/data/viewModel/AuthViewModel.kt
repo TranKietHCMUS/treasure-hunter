@@ -102,24 +102,19 @@ class AuthViewModel : ViewModel() {
         }
 
         fun updateHighestScore(
-            newScore: Int,
-            onSuccess: () -> Unit,
-            onError: (String) -> Unit
+            newScore: Int
         ) {
             val currentUid = auth.currentUser?.uid
             if (currentUid == null) {
-                onError("You need to log in to update your score")
                 return
             }
 
             val user = _currentUser.value
             if (user == null) {
-                onError("User information not found")
                 return
             }
 
             if (newScore <= user.highestScore) {
-                onSuccess()
                 return
             }
 
@@ -127,10 +122,9 @@ class AuthViewModel : ViewModel() {
                 .update("highestScore", newScore)
                 .addOnSuccessListener {
                     _currentUser.value = user.copy(highestScore = newScore)
-                    onSuccess()
                 }
                 .addOnFailureListener { e ->
-                    onError(e.message ?: "Failed to update the highest score")
+                    // Có thể thêm xử lý lỗi ở đây
                 }
         }
 
