@@ -28,19 +28,22 @@ import com.example.treasurehunter.R
 data class NavItem(
     val label : String,
     val lottieResId : Int,
-    val mode : ScreenMode
+    val mode : ScreenMode,
+    val size : Int,
+    val padding : Int
 )
 
 @Composable
 fun BottomNavigate() {
     val navItemList = listOf(
-        NavItem("Map", lottieResId = R.raw.ar_animation, mode = ScreenMode.MAP),
-        NavItem("AR", lottieResId = R.raw.ar_animation, mode = ScreenMode.AR),
-        NavItem("Puzzle", lottieResId = R.raw.ar_animation, mode = ScreenMode.PUZZLE),
-        NavItem("Test", lottieResId = R.raw.ar_animation, mode = ScreenMode.TEST),
+        NavItem("Map", lottieResId = R.raw.map_animation, mode = ScreenMode.MAP, size = 48, padding = 1),
+        NavItem("AR", lottieResId = R.raw.ar_animation, mode = ScreenMode.AR, size = 44, padding = 3),
+        NavItem("Puzzle", lottieResId = R.raw.puzzle_animation, mode = ScreenMode.PUZZLE, size = 50, padding = 0),
     )
 
-    NavigationBar {
+    NavigationBar (
+        modifier = Modifier.padding(0.dp),
+    ) {
         navItemList.forEach { navItem ->
             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(navItem.lottieResId ?: 0))
             val progress by animateLottieCompositionAsState(
@@ -54,10 +57,15 @@ fun BottomNavigate() {
                     LottieAnimation(
                         composition,
                         progress,
-                        modifier = Modifier.size(50.dp).padding(5.dp)
+                        modifier = Modifier.size(navItem.size.dp).padding(navItem.padding.dp)
                     )
                        },
-                label = { Text(navItem.label) },
+                label = {
+                    Text(
+                        navItem.label,
+                        modifier = Modifier.padding(0.dp)
+                    )
+                        },
                 selected = (navItem.mode == GameViewModel.screenMode),
                 onClick = {
                     GameViewModel.changeScreenMode(navItem.mode)
