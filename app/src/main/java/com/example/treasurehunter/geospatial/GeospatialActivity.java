@@ -880,6 +880,7 @@ public class GeospatialActivity extends AppCompatActivity
    * Updates all the StreetscapeGeometries. Existing StreetscapeGeometries will have pose updated,
    * and non-existing StreetscapeGeometries will be removed from the scene.
    */
+
   private void updateStreetscapeGeometries(Collection<StreetscapeGeometry> streetscapeGeometries) {
     for (StreetscapeGeometry streetscapeGeometry : streetscapeGeometries) {
       // If the Streetscape Geometry node is already added to the scene, then we'll simply update
@@ -892,7 +893,6 @@ public class GeospatialActivity extends AppCompatActivity
       }
     }
   }
-
   private Mesh getSampleRenderMesh(StreetscapeGeometry streetscapeGeometry) {
     FloatBuffer streetscapeGeometryBuffer = streetscapeGeometry.getMesh().getVertexList();
     streetscapeGeometryBuffer.rewind();

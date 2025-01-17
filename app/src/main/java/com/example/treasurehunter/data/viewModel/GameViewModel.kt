@@ -38,7 +38,7 @@ import com.google.android.gms.tasks.OnTokenCanceledListener
 class GameViewModel @Inject constructor() : ViewModel()  {
     companion object {
         var screenMode by mutableStateOf(ScreenMode.MAP)
-
+        @JvmStatic
         fun changeScreenMode(mode: ScreenMode) {
             screenMode = mode
         }
@@ -64,7 +64,8 @@ class GameViewModel @Inject constructor() : ViewModel()  {
         // Tạo danh sách các kho báu từ tọa độ ngẫu nhiên
         fun generateTreasures(center: LatLng, radius: Double, count: Int = 9) {
             val treasureList = mutableListOf<Treasure>()
-            for (i in 1..count) {
+            treasureList.add(Treasure(location = LatLng(10.7555192,106.6818428)))
+            for (i in 2..count) {
                 val randomPoint = generateRandomLocation(center, radius)
                 treasureList.add(Treasure(location = randomPoint))
             }
@@ -77,6 +78,7 @@ class GameViewModel @Inject constructor() : ViewModel()  {
         }
 
         // Đánh dấu kho báu đã tìm thấy
+        @JvmStatic
         fun markTreasureAsFound(location: LatLng) {
             _treasures.value = _treasures.value.map {
                 if (it.location == location) it.copy(found = true) else it
