@@ -13,7 +13,6 @@ class TreasureViewModel @Inject constructor() : ViewModel() {
     companion object {
         var isChestShow by mutableStateOf(false)
 
-
         fun showChest() {
             Log.i("MainActivity", "Set chest show")
             isChestShow = true
@@ -21,6 +20,12 @@ class TreasureViewModel @Inject constructor() : ViewModel() {
 
         fun hideChest() {
             isChestShow = false
+        }
+
+        fun openChest() {
+            showChest()
+            PuzzleViewModel.showPiece()
+            ScoreViewModel.increaseScore()
         }
     }
 }

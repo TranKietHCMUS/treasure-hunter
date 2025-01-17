@@ -18,7 +18,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.treasurehunter.GeospatialActivity">
+    tools:context="com.example.treasurehunter.ARActivity">
 
   <android.opengl.GLSurfaceView
       android:id="@+id/surfaceview"
@@ -61,8 +61,8 @@
       android:layout_height="wrap_content"
       android:layout_above="@+id/streetscape_geometry_switch"
       android:text="@string/button_text_set_anchor"
-      android:drawableRight="@drawable/ic_settings_white"
-      android:layout_alignParentRight="true"
+      android:drawableEnd="@drawable/ic_settings_white"
+      android:layout_alignParentEnd="true"
       android:visibility="invisible"/>
 
   <Switch
@@ -70,7 +70,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/switch_render_streetscaope_geometry"
-      android:layout_alignParentRight="true"
+      android:layout_alignParentEnd="true"
       android:layout_alignParentBottom="true"
       android:padding="10dp"
       android:textOff="Off"
@@ -81,7 +81,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/button_text_clear_anchors"
-      android:layout_alignParentLeft="true"
+      android:layout_alignParentStart="true"
       android:layout_alignParentBottom="true"
       android:visibility="invisible"/>
 
