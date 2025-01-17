@@ -37,7 +37,7 @@ class AuthViewModel : ViewModel() {
                         val userData = hashMapOf(
                             "uid" to uid,
                             "fullName" to fullName,
-                            "gender" to gender.name, // Lưu enum dưới dạng String
+                            "gender" to gender.name,
                             "dob" to dob,
                             "highestScore" to 0
                         )
@@ -49,10 +49,10 @@ class AuthViewModel : ViewModel() {
                                 onSuccess()
                             }
                             .addOnFailureListener { e ->
-                                onError(e.message ?: "An error occurred")
+                                onError(e.message ?: "Đã xảy ra lỗi khi tạo tài khoản")
                             }
                     } else {
-                        onError(task.exception?.message ?: "Registration failed")
+                        onError(task.exception?.message ?: "Đăng ký thất bại")
                     }
                 }
         }
@@ -71,7 +71,6 @@ class AuthViewModel : ViewModel() {
                             .addOnSuccessListener { document ->
                                 if (document.exists()) {
                                     try {
-                                        // Tạo user object từ document data
                                         val data = document.data
                                         if (data != null) {
                                             val user = User(
@@ -84,21 +83,54 @@ class AuthViewModel : ViewModel() {
                                             _currentUser.value = user
                                             onSuccess()
                                         } else {
-                                            onError("Invalid user data")
+                                            onError("Dữ liệu người dùng không hợp lệ")
                                         }
                                     } catch (e: Exception) {
-                                        onError("Error parsing user data: ${e.message}")
+                                        onError("Lỗi khi xử lý dữ liệu người dùng: ${e.message}")
                                     }
                                 } else {
-                                    onError("User not found")
+                                    onError("Không tìm thấy thông tin người dùng")
                                 }
                             }
                             .addOnFailureListener { e ->
-                                onError(e.message ?: "An error occurred")
+                                onError(e.message ?: "Đã xảy ra lỗi khi đăng nhập")
                             }
                     } else {
-                        onError(task.exception?.message ?: "Login failed")
+                        onError(task.exception?.message ?: "Đăng nhập thất bại")
                     }
+                }
+        }
+
+        fun updateHighestScore(
+            newScore: Int,
+            onSuccess: () -> Unit,
+            onError: (String) -> Unit
+        ) {
+            val currentUid = auth.currentUser?.uid
+            if (currentUid == null) {
+                onError("Bạn cần đăng nhập để cập nhật điểm")
+                return
+            }
+
+            val user = _currentUser.value
+            if (user == null) {
+                onError("Không tìm thấy thông tin người dùng")
+                return
+            }
+
+            if (newScore <= user.highestScore) {
+                onSuccess()
+                return
+            }
+
+            db.collection(USERS_COLLECTION).document(currentUid)
+                .update("highestScore", newScore)
+                .addOnSuccessListener {
+                    _currentUser.value = user.copy(highestScore = newScore)
+                    onSuccess()
+                }
+                .addOnFailureListener { e ->
+                    onError(e.message ?: "Cập nhật điểm cao nhất thất bại")
                 }
         }
 
