@@ -12,12 +12,6 @@ import com.example.treasurehunter.data.model.ScreenMode
 import com.example.treasurehunter.data.viewModel.GameViewModel
 import com.example.treasurehunter.ui.component.BottomNavigate
 
-data class NavItem(
-    val label : String,
-    val icon : ImageVector,
-    val mode : ScreenMode
-)
-
 @Preview
 @Composable
 fun InGameScreen() {
