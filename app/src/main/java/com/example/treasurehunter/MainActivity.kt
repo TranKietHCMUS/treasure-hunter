@@ -89,7 +89,7 @@ fun MyApp(modifier: Modifier = Modifier) {
         CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = "login",
+                startDestination = "home",
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
                 modifier = Modifier
