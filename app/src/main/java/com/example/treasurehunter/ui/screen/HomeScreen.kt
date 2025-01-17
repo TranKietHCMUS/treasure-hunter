@@ -44,6 +44,23 @@ fun HomeScreen() {
             ),
         contentAlignment = Alignment.Center
     ) {
+        IconButton(
+            onClick = {
+                // Điều hướng đến màn hình Profile
+                navController.navigate("profile")
+            },
+            modifier = Modifier
+                .align(Alignment.TopEnd) // Căn góc trên bên phải
+                .padding(16.dp) // Khoảng cách từ góc
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.account_circle), // Thay bằng icon hồ sơ của bạn
+                contentDescription = "Profile",
+                tint = Color.White,
+                modifier = Modifier.size(32.dp) // Kích thước icon
+            )
+        }
+
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             // Logo
             Image(
