@@ -34,6 +34,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
+import com.example.treasurehunter.LocalNavController
+import com.example.treasurehunter.data.viewModel.GameViewModel
 import com.example.treasurehunter.data.viewModel.ScoreViewModel
 
 @Composable
@@ -55,8 +57,18 @@ fun InputComponent() {
 
     TextField(
         value = PuzzleViewModel.userInput, onValueChange = {
+            var submit = false;
+            if (it.length > 1 && it[it.length - 1] == '\n') {
+                submit = true
+            }
             if (it.length <= PuzzleViewModel.correctAnswer.length) {
                 PuzzleViewModel.userInput = it.uppercase()
+            }
+            if (submit) {
+                Log.i("Correct Answer", PuzzleViewModel.correctAnswer)
+                Log.i("User Input", PuzzleViewModel.userInput)
+                // Check the user's input
+                PuzzleViewModel.checkAnswer()
             }
         },
     )
@@ -75,15 +87,16 @@ fun InputComponent() {
 
 @Composable
 fun SolvedCoponent() {
+    val navController = LocalNavController.current
     Column(
         modifier = Modifier.fillMaxWidth().padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "You solved the puzzle:",
+            text = "You solved the puzzle!",
             color = Color.White,
-            fontSize = 20.sp
+            fontSize = 15.sp
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -91,16 +104,22 @@ fun SolvedCoponent() {
         Text(
             text = "${PuzzleViewModel.correctAnswer}",
             color = Color.White,
-            fontSize = 30.sp
+            fontSize = 25.sp
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Your claiming points will be doubled when open chest",
+            text = "Your max score: ${ScoreViewModel.maxScore}",
             color = Color.White,
             fontSize = 12.sp
         )
+
+        Button(onClick = {
+            navController.navigate("create-room")
+        }) {
+            Text("New game")
+        }
     }
 }
 
