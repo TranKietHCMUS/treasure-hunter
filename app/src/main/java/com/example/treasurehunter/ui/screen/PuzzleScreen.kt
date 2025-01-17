@@ -39,17 +39,16 @@ import com.example.treasurehunter.data.viewModel.ScoreViewModel
 @Composable
 fun InputComponent() {
     Text(
-        modifier = Modifier.fillMaxWidth()
-            .padding(20.dp),
+        modifier = Modifier.fillMaxWidth().padding(start = 20.dp, top = 5.dp, bottom = 5.dp),
         text = "You have ${PuzzleViewModel.remainSubmition} submition${if(PuzzleViewModel.remainSubmition > 1) "s" else ""} left",
         color = Color.White,
-        fontSize = 15.sp
+        fontSize = 10.sp
     )
 
     Text(
         text = "Result includes ${PuzzleViewModel.correctAnswer.length} characters",
         color = Color.White,
-        fontSize = 20.sp
+        fontSize = 15.sp
     )
 
     Spacer(modifier = Modifier.height(10.dp))
@@ -62,7 +61,7 @@ fun InputComponent() {
         },
     )
 
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(10.dp))
 
     Button(onClick = {
         Log.i("Correct Answer", PuzzleViewModel.correctAnswer)
@@ -111,7 +110,6 @@ fun PuzzleScreen() {
     Column  (
         modifier = Modifier
             .fillMaxSize()
-            .padding(30.dp)
             .background(
                 color = Color(0xFF260000)
             ),
@@ -119,21 +117,23 @@ fun PuzzleScreen() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Text(
             text = "Your current score: ",
             color = Color.White,
-            fontSize = 20.sp
+            fontSize = 15.sp
         )
+
         Spacer(modifier = Modifier.height(10.dp))
+
         Text(
             text = ScoreViewModel.score.toString(),
             color = Color.White,
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Box(
             modifier = Modifier
@@ -203,7 +203,7 @@ fun PuzzleScreen() {
 
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(5.dp))
 
         if (PuzzleViewModel.isSolved) {
             SolvedCoponent()

@@ -13,7 +13,7 @@ import kotlin.random.Random
 class PuzzleViewModel @Inject constructor() : ViewModel() {
     companion object {
         // Puzzle image
-        val imageSize = 300.dp
+        val imageSize = 240.dp
 
         private val imageUrlList = listOf(
             "https://hcmus.edu.vn/wp-content/uploads/2021/12/logo-khtn_remake-1.png"
