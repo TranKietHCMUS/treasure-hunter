@@ -175,10 +175,9 @@ class GameViewModel @Inject constructor() : ViewModel()  {
                 return
             }
 
-            // Sử dụng LocationRequest.Builder thay cho LocationRequest.create()
-            val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
-                .setIntervalMillis(1000)  // Cập nhật mỗi 1 giây
-                .setMinUpdateDistanceMeters(0f) // Cập nhật nếu người dùng di chuyển ít nhất 10m
+            // Sử dụng LocationRequest.Builder với thời gian cập nhật 2 giây
+            val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000) // 2 giây
+                .setMinUpdateDistanceMeters(0f) // Nhận tất cả thay đổi vị trí
                 .build()
 
             val locationCallback = object : LocationCallback() {
@@ -187,19 +186,19 @@ class GameViewModel @Inject constructor() : ViewModel()  {
                         val userLocation = LatLng(location.latitude, location.longitude)
                         _currentUserLocation.value = userLocation
 
-                        // Log vị trí người dùng mỗi khi thay đổi
-                        Log.d("GameViewModel", "Updated user location: $userLocation")
+                        // Log vị trí người dùng mỗi khi nhận được
+//                        Log.d("GameViewModel", "User location every 2s: $userLocation")
 
                         onLocationChanged(userLocation)
                     }
                 }
             }
 
-            // Bắt đầu theo dõi vị trí
+            // Bắt đầu theo dõi vị trí với khoảng thời gian cập nhật là 2 giây
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
-                null // Chạy trên main thread mặc định
+                null // Chạy trên main thread
             )
         }
 
