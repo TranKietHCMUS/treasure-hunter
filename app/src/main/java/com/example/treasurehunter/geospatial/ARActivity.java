@@ -16,6 +16,8 @@
 
 package com.example.treasurehunter.geospatial;
 
+import static com.example.treasurehunter.data.viewModel.GameViewModel.getCoordinatesAsList;
+
 import com.example.treasurehunter.R;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -37,7 +39,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.treasurehunter.data.viewModel.LocationViewModel;
+import com.example.treasurehunter.data.model.Treasure;
+import com.example.treasurehunter.data.viewModel.GameViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.ar.core.Anchor;
@@ -227,7 +230,6 @@ public class ARActivity extends AppCompatActivity
     private Shader streetscapeGeometryBuildingShader;
     // A set of planes representing building outlines and floors.
     private final Map<StreetscapeGeometry, Mesh> streetscapeGeometryToMeshes = new HashMap<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -563,33 +565,23 @@ public class ARActivity extends AppCompatActivity
         virtualSceneFramebuffer.resize(width, height);
     }
 
+    private List<Treasure> coordinates = getCoordinatesAsList();
+
+
     @Override
     public void onDrawFrame(SampleRender render) {
         if (session == null) {
             return;
         }
 
-        // Initialize anchors from external file if not already done
+        // Initialize anchors from coordinates list if not already done
         if (!hasInitializedAnchors) {
-            // Define coordinates for anchors
-            List<Pair<Double, Double>> coordinates = Arrays.asList(
-                    new Pair<>(10.7481774, 106.704646),
-                    new Pair<>(10.748627060802958, 106.704646),
-                    new Pair<>(10.748495358203005, 106.70496963596538),
-                    new Pair<>(10.7481774, 106.70510369037152),
-                    new Pair<>(10.747859441796994, 106.70496963596538),
-                    new Pair<>(10.74772773919704, 106.704646),
-                    new Pair<>(10.747859441796994, 106.70432236403461),
-                    new Pair<>(10.7481774, 106.70418830962848),
-                    new Pair<>(10.748495358203005, 106.70432236403461)
-            );
-
             Earth earth = session.getEarth();
             if (earth != null && earth.getTrackingState() == TrackingState.TRACKING) {
-                for (Pair<Double, Double> coord : coordinates) {
-                    double latitude = coord.first;
-                    double longitude = coord.second;
-                    double altitude = 0; // Default altitude
+                for (Treasure coord : coordinates) {
+                    double latitude = coord.getLocation().latitude;
+                    double longitude = coord.getLocation().longitude;
+                    double altitude = 6.5; // Default altitude
                     float[] quaternion = {0, 0, 0, 1}; // Default orientation
 
                     // Create an anchor at the specified coordinates
@@ -779,7 +771,7 @@ public class ARActivity extends AppCompatActivity
                 Pose cameraPose = frame.getCamera().getDisplayOrientedPose();
 
                 double distance = calculateDistance(anchorPose, cameraPose);
-                if (distance < 20) { // Render if within 20 meters
+                if (distance < 10) { // Render if within 20 meters
                     renderAnchorObject(anchor, camera);
                 }
             }
@@ -944,11 +936,29 @@ public class ARActivity extends AppCompatActivity
                                 quaternion[1],
                                 quaternion[2],
                                 quaternion[3],
-                                geospatialPose.getOrientationYawAccuracy());
-        runOnUiThread(
+                                nearestDistance(geospatialPose));
+;        runOnUiThread(
                 () -> geospatialPoseTextView.setText(poseText));
     }
 
+    private float nearestDistance (GeospatialPose geospatialPose) {
+        float nearestDistance = Float.MAX_VALUE;
+        for (Treasure anchors : coordinates) {
+            float disc = (float)coordinatesDistance(
+                    geospatialPose.getLatitude(),
+                    anchors.getLocation().latitude,
+                    geospatialPose.getLongitude(),
+                    anchors.getLocation().longitude,
+                    geospatialPose.getAltitude(),
+                    0
+            );
+
+            if (disc < nearestDistance) {
+                nearestDistance = disc;
+            }
+        }
+        return nearestDistance;
+    }
     // Return the scale in range [1, 2] after mapping a distance between camera and anchor to [2, 20].
     private float getScale(Pose anchorPose, Pose cameraPose) {
         double distance =
@@ -1055,14 +1065,29 @@ public class ARActivity extends AppCompatActivity
         }
     }
 
-    private double calculateDistance(Pose anchorPose, Pose cameraPose){
-        return Math.sqrt(
-                Math.pow(anchorPose.tx() - cameraPose.tx(), 2.0)
-                        + Math.pow(anchorPose.ty() - cameraPose.ty(), 2.0)
-                        + Math.pow(anchorPose.tz() - cameraPose.tz(), 2.0)
-        );
+    private double calculateDistance(Pose anchorPose, Pose cameraPose) {
+        return Math.sqrt(Math.pow(anchorPose.tx() - cameraPose.tx(), 2.0) + Math.pow(anchorPose.ty() - cameraPose.ty(), 2.0) + Math.pow(anchorPose.tz() - cameraPose.tz(), 2.0));
     }
 
+    public static double coordinatesDistance(double lat1, double lat2, double lon1,
+            double lon2, double el1, double el2) {
+
+        final int R = 6371; // Radius of the earth
+        
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // convert to meters
+
+        double height = el1 - el2;
+
+        distance = Math.pow(distance, 2) + Math.pow(height, 2);
+
+        return Math.sqrt(distance);
+    }
 
     private List<Pair<Double, Double>> readCoordinatesFromFile() throws IOException {
         List<Pair<Double, Double>> coordinates = new ArrayList<>();

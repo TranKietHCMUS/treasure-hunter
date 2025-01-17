@@ -24,7 +24,7 @@
         <item quantity="other">%d Anchors cleared</item>
     </plurals>
     <string translatable="false" name="geospatial_pose_not_tracking">GEOSPATIAL POSE: Not tracking</string>
-    <string translatable="false" name="geospatial_pose">LAT/LNG: %.6f˚, %.6f˚\n\t\t\tACCURACY: %.2fm\nALTITUDE: %.2fm\n\t\t\tACCURACY: %.2fm\nORIENTATION: [%.1f, %.1f, %.1f, %.1f]\n\t\t\tYAW ACCURACY: %.1f˚</string>
+    <string translatable="false" name="geospatial_pose">LAT/LNG: %.6f˚, %.6f˚\n\t\t\tACCURACY: %.2fm\nALTITUDE: %.2fm\n\t\t\tACCURACY: %.2fm\nORIENTATION: [%.1f, %.1f, %.1f, %.1f]\n\t\t\tNEAREST CHEST: %.1f˚</string>
 
     <!-- Strings used in privacy notice dialog messages. [CHAR_LIMIT=NONE] -->
     <string  name="share_experience_title">AR in the real world</string>

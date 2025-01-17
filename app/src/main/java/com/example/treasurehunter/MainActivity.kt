@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -34,6 +35,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.app.auth.AuthViewModel
+import com.example.app.auth.LoginScreen
+import com.example.app.auth.RegisterScreen
 import com.example.treasurehunter.ui.screen.CreateRoomScreen
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
 import com.example.treasurehunter.ui.component.OpenChest
@@ -44,6 +48,7 @@ import com.example.treasurehunter.ui.screen.InGameScreen
 //import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import com.example.treasurehunter.ui.screen.TestScreen
 import com.example.treasurehunter.ui.theme.TreasureHunterTheme
+import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import kotlin.math.log
@@ -52,6 +57,7 @@ import kotlin.math.log
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        FirebaseApp.initializeApp(this)
         // Application-level initialization can go here
     }
 }
@@ -94,7 +100,9 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("test") { TestScreen() }
                 composable("ar") { ARScreen() }
                 composable("create-room") { CreateRoomScreen() }
-                composable(route = "in-game") { InGameScreen() }
+                composable("in-game") { InGameScreen() }
+                composable("login") { LoginScreen() { navController.navigate("home") } }
+                composable("register") { RegisterScreen() { navController.navigate("login") } }
             }
         }
 
