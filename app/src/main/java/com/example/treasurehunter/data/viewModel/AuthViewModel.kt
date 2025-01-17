@@ -49,10 +49,10 @@ class AuthViewModel : ViewModel() {
                                 onSuccess()
                             }
                             .addOnFailureListener { e ->
-                                onError(e.message ?: "Đã xảy ra lỗi khi tạo tài khoản")
+                                onError(e.message ?: "An error occurred while creating the account")
                             }
                     } else {
-                        onError(task.exception?.message ?: "Đăng ký thất bại")
+                        onError(task.exception?.message ?: "Registration failed")
                     }
                 }
         }
@@ -83,20 +83,20 @@ class AuthViewModel : ViewModel() {
                                             _currentUser.value = user
                                             onSuccess()
                                         } else {
-                                            onError("Dữ liệu người dùng không hợp lệ")
+                                            onError("Invalid user data")
                                         }
                                     } catch (e: Exception) {
-                                        onError("Lỗi khi xử lý dữ liệu người dùng: ${e.message}")
+                                        onError("Error processing user data: ${e.message}")
                                     }
                                 } else {
-                                    onError("Không tìm thấy thông tin người dùng")
+                                    onError("User information not found")
                                 }
                             }
                             .addOnFailureListener { e ->
-                                onError(e.message ?: "Đã xảy ra lỗi khi đăng nhập")
+                                onError(e.message ?: "An error occurred while logging in")
                             }
                     } else {
-                        onError(task.exception?.message ?: "Đăng nhập thất bại")
+                        onError(task.exception?.message ?: "Login failed")
                     }
                 }
         }
@@ -108,13 +108,13 @@ class AuthViewModel : ViewModel() {
         ) {
             val currentUid = auth.currentUser?.uid
             if (currentUid == null) {
-                onError("Bạn cần đăng nhập để cập nhật điểm")
+                onError("You need to log in to update your score")
                 return
             }
 
             val user = _currentUser.value
             if (user == null) {
-                onError("Không tìm thấy thông tin người dùng")
+                onError("User information not found")
                 return
             }
 
@@ -130,7 +130,7 @@ class AuthViewModel : ViewModel() {
                     onSuccess()
                 }
                 .addOnFailureListener { e ->
-                    onError(e.message ?: "Cập nhật điểm cao nhất thất bại")
+                    onError(e.message ?: "Failed to update the highest score")
                 }
         }
 

@@ -54,7 +54,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 Logo()
 
                 Text(
-                    "Đăng nhập",
+                    "Log in",
                     style = MaterialTheme.typography.headlineSmall
                 )
 
@@ -69,7 +69,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Mật khẩu") },
+                    label = { Text("Password") },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     isError = password.isNotEmpty() && password.length < 6
@@ -92,7 +92,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         containerColor = Color(0xFFFF6D2E),
                     ),
                 ) {
-                    Text("Đăng nhập")
+                    Text("Log in")
                 }
 
                 if (errorMessage.isNotEmpty()) {
@@ -104,7 +104,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                 }
 
                 TextButton(onClick = { navController.navigate("register") }) {
-                    Text("Chưa có tài khoản? Đăng ký ngay!")
+                    Text("Don't have an account? Sign up now!")
                 }
             }
         }
