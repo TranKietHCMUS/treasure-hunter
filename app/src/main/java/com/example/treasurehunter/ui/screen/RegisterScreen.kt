@@ -50,7 +50,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                             selectedDate = Date(millis)
                             showDatePicker = false
                         } else {
-                            errorMessage = "Ngày sinh không thể là ngày trong tương lai"
+                            errorMessage = "Birthdate cannot be a future date"
                         }
                     }
                 }) {
@@ -59,7 +59,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Hủy")
+                    Text("Cancel")
                 }
             }
         ) {
@@ -94,14 +94,14 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    "Đăng ký tài khoản",
+                    "Register an Account",
                     style = MaterialTheme.typography.headlineSmall
                 )
 
                 OutlinedTextField(
                     value = fullName,
                     onValueChange = { fullName = it },
-                    label = { Text("Họ và tên") },
+                    label = { Text("Full Name") },
                     modifier = Modifier.fillMaxWidth(),
                     isError = fullName.isNotEmpty() && fullName.length < 2
                 )
@@ -114,9 +114,9 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 ) {
                     OutlinedTextField(
                         value = when(selectedGender) {
-                            Gender.MALE -> "Nam"
-                            Gender.FEMALE -> "Nữ"
-                            Gender.OTHER -> "Khác"
+                            Gender.MALE -> "Male"
+                            Gender.FEMALE -> "Female"
+                            Gender.OTHER -> "Other"
                         },
                         onValueChange = {},
                         readOnly = true,
@@ -126,28 +126,28 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                         modifier = Modifier
                             .menuAnchor()
                             .fillMaxWidth(),
-                        label = { Text("Giới tính") }
+                        label = { Text("Gender") }
                     )
                     ExposedDropdownMenu(
                         expanded = isGenderMenuExpanded,
                         onDismissRequest = { isGenderMenuExpanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Chọn") },
+                            text = { Text("Male") },
                             onClick = {
                                 selectedGender = Gender.MALE
                                 isGenderMenuExpanded = false
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Nữ") },
+                            text = { Text("Female") },
                             onClick = {
                                 selectedGender = Gender.FEMALE
                                 isGenderMenuExpanded = false
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Khác") },
+                            text = { Text("Other") },
                             onClick = {
                                 selectedGender = Gender.OTHER
                                 isGenderMenuExpanded = false
@@ -159,13 +159,13 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 OutlinedTextField(
                     value = selectedDate?.let { dateFormat.format(it) } ?: "",
                     onValueChange = { },
-                    label = { Text("Ngày sinh") },
+                    label = { Text("Birthdate") },
                     trailingIcon = {
                         IconButton(onClick = {
                             errorMessage = ""
                             showDatePicker = true
                         }) {
-                            Icon(Icons.Default.DateRange, "Chọn ngày")
+                            Icon(Icons.Default.DateRange, "Select date")
                         }
                     },
                     readOnly = true,
@@ -184,7 +184,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Mật khẩu") },
+                    label = { Text("Password") },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     isError = password.isNotEmpty() && password.length < 6
@@ -193,12 +193,12 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 Button(
                     onClick = {
                         try {
-                            val dob = selectedDate ?: throw Exception("Vui lòng chọn ngày sinh")
+                            val dob = selectedDate ?: throw Exception("Please select a birthdate")
 
                             when {
-                                fullName.length < 2 -> throw Exception("Tên phải có ít nhất 2 ký tự")
-                                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> throw Exception("Email không hợp lệ")
-                                password.length < 6 -> throw Exception("Mật khẩu phải có ít nhất 6 ký tự")
+                                fullName.length < 2 -> throw Exception("Name must be at least 2 characters")
+                                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> throw Exception("Invalid email format")
+                                password.length < 6 -> throw Exception("Password must be at least 6 characters")
                                 else -> {
                                     AuthViewModel.registerUser(
                                         email = email,
@@ -212,7 +212,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                                 }
                             }
                         } catch (e: Exception) {
-                            errorMessage = e.message ?: "Đã có lỗi xảy ra"
+                            errorMessage = e.message ?: "An error occurred"
                         }
                     },
                     modifier = Modifier
@@ -224,7 +224,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                         containerColor = Color(0xFFFF6D2E),
                     ),
                 ) {
-                    Text("Đăng ký")
+                    Text("Register")
                 }
 
                 if (errorMessage.isNotEmpty()) {
@@ -236,7 +236,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 }
 
                 TextButton(onClick = { navController.navigate("login") }) {
-                    Text("Đã có tài khoản? Đăng nhập ngay!")
+                    Text("Already have an account? Log in now!")
                 }
             }
         }
