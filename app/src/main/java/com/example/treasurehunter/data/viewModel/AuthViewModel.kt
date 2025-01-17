@@ -37,7 +37,7 @@ class AuthViewModel : ViewModel() {
                         val userData = hashMapOf(
                             "uid" to uid,
                             "fullName" to fullName,
-                            "gender" to gender.name, // Lưu enum dưới dạng String
+                            "gender" to gender.name,
                             "dob" to dob,
                             "highestScore" to 0
                         )
@@ -49,7 +49,7 @@ class AuthViewModel : ViewModel() {
                                 onSuccess()
                             }
                             .addOnFailureListener { e ->
-                                onError(e.message ?: "An error occurred")
+                                onError(e.message ?: "An error occurred while creating the account")
                             }
                     } else {
                         onError(task.exception?.message ?: "Registration failed")
@@ -71,7 +71,6 @@ class AuthViewModel : ViewModel() {
                             .addOnSuccessListener { document ->
                                 if (document.exists()) {
                                     try {
-                                        // Tạo user object từ document data
                                         val data = document.data
                                         if (data != null) {
                                             val user = User(
@@ -87,18 +86,51 @@ class AuthViewModel : ViewModel() {
                                             onError("Invalid user data")
                                         }
                                     } catch (e: Exception) {
-                                        onError("Error parsing user data: ${e.message}")
+                                        onError("Error processing user data: ${e.message}")
                                     }
                                 } else {
-                                    onError("User not found")
+                                    onError("User information not found")
                                 }
                             }
                             .addOnFailureListener { e ->
-                                onError(e.message ?: "An error occurred")
+                                onError(e.message ?: "An error occurred while logging in")
                             }
                     } else {
                         onError(task.exception?.message ?: "Login failed")
                     }
+                }
+        }
+
+        fun updateHighestScore(
+            newScore: Int,
+            onSuccess: () -> Unit,
+            onError: (String) -> Unit
+        ) {
+            val currentUid = auth.currentUser?.uid
+            if (currentUid == null) {
+                onError("You need to log in to update your score")
+                return
+            }
+
+            val user = _currentUser.value
+            if (user == null) {
+                onError("User information not found")
+                return
+            }
+
+            if (newScore <= user.highestScore) {
+                onSuccess()
+                return
+            }
+
+            db.collection(USERS_COLLECTION).document(currentUid)
+                .update("highestScore", newScore)
+                .addOnSuccessListener {
+                    _currentUser.value = user.copy(highestScore = newScore)
+                    onSuccess()
+                }
+                .addOnFailureListener { e ->
+                    onError(e.message ?: "Failed to update the highest score")
                 }
         }
 

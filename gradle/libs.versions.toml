@@ -32,6 +32,7 @@ playServicesMaps = "19.0.0"
 firebaseDatabaseKtx = "21.0.0"
 firebaseFirestoreKtx = "25.1.1"
 firebaseCommonKtx = "21.0.0"
+firebaseAuthKtx = "23.1.0"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -73,6 +74,7 @@ play-services-maps-v1900 = { module = "com.google.android.gms:play-services-maps
 firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 firebase-common-ktx = { group = "com.google.firebase", name = "firebase-common-ktx", version.ref = "firebaseCommonKtx" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

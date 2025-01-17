@@ -45,6 +45,7 @@ import com.example.treasurehunter.geospatial.GeospatialActivity
 import com.example.treasurehunter.ui.screen.ARScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
 import com.example.treasurehunter.ui.screen.InGameScreen
+import com.example.treasurehunter.ui.screen.ProfileScreen
 //import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import com.example.treasurehunter.ui.screen.TestScreen
 import com.example.treasurehunter.ui.theme.TreasureHunterTheme
@@ -88,7 +89,7 @@ fun MyApp(modifier: Modifier = Modifier) {
         CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "login",
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
                 modifier = Modifier
@@ -103,6 +104,7 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable(route = "in-game") { InGameScreen() }
                 composable("login") { LoginScreen() { navController.navigate("home") } }
                 composable("register") { RegisterScreen() { navController.navigate("login") } }
+                composable("profile") { ProfileScreen() }
             }
         }
 

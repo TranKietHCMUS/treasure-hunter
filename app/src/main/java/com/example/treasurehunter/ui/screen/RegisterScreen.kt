@@ -1,13 +1,16 @@
 package com.example.app.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -25,6 +28,7 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
     var password by remember { mutableStateOf("") }
     var fullName by remember { mutableStateOf("") }
     var selectedGender by remember { mutableStateOf(Gender.MALE) }
+    var isGenderMenuExpanded by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf<Date?>(null) }
     var showDatePicker by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -40,25 +44,22 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            // Kiểm tra nếu ngày được chọn không phải trong tương lai
-                            if (millis <= System.currentTimeMillis()) {
-                                selectedDate = Date(millis)
-                                showDatePicker = false
-                            } else {
-                                errorMessage = "Ngày sinh không thể là ngày trong tương lai"
-                            }
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        if (millis <= System.currentTimeMillis()) {
+                            selectedDate = Date(millis)
+                            showDatePicker = false
+                        } else {
+                            errorMessage = "Birthdate cannot be a future date"
                         }
                     }
-                ) {
+                }) {
                     Text("OK")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Hủy")
+                    Text("Cancel")
                 }
             }
         ) {
@@ -66,130 +67,178 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFFF5881F), Color(0xFFFFA726), Color.White)
+                )
+            ),
+        contentAlignment = Alignment.Center
     ) {
-        TextField(
-            value = fullName,
-            onValueChange = { fullName = it },
-            label = { Text("Họ và tên") },
-            isError = fullName.isNotEmpty() && fullName.length < 2
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Gender selection
-        ExposedDropdownMenuBox(
-            expanded = false,
-            onExpandedChange = {},
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFFFF3E0)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Giới tính: ")
-                RadioButton(
-                    selected = selectedGender == Gender.MALE,
-                    onClick = { selectedGender = Gender.MALE }
+                Text(
+                    "Register an Account",
+                    style = MaterialTheme.typography.headlineSmall
                 )
-                Text("Nam")
-                Spacer(modifier = Modifier.width(8.dp))
-                RadioButton(
-                    selected = selectedGender == Gender.FEMALE,
-                    onClick = { selectedGender = Gender.FEMALE }
+
+                OutlinedTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = { Text("Full Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = fullName.isNotEmpty() && fullName.length < 2
                 )
-                Text("Nữ")
-                Spacer(modifier = Modifier.width(8.dp))
-                RadioButton(
-                    selected = selectedGender == Gender.OTHER,
-                    onClick = { selectedGender = Gender.OTHER }
-                )
-                Text("Khác")
-            }
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Date of Birth field with DatePicker
-        OutlinedTextField(
-            value = selectedDate?.let { dateFormat.format(it) } ?: "",
-            onValueChange = { },
-            label = { Text("Ngày sinh") },
-            trailingIcon = {
-                IconButton(onClick = {
-                    errorMessage = ""
-                    showDatePicker = true
-                }) {
-                    Icon(Icons.Default.DateRange, "Chọn ngày")
-                }
-            },
-            readOnly = true,
-            enabled = false
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            isError = email.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Mật khẩu") },
-            visualTransformation = PasswordVisualTransformation(),
-            isError = password.isNotEmpty() && password.length < 6
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                try {
-                    val dob = selectedDate ?: throw Exception("Vui lòng chọn ngày sinh")
-
-                    when {
-                        fullName.length < 2 -> throw Exception("Tên phải có ít nhất 2 ký tự")
-                        !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> throw Exception("Email không hợp lệ")
-                        password.length < 6 -> throw Exception("Mật khẩu phải có ít nhất 6 ký tự")
-                        else -> {
-                            AuthViewModel.registerUser(
-                                email = email,
-                                password = password,
-                                fullName = fullName,
-                                gender = selectedGender,
-                                dob = dob,
-                                onSuccess = onRegisterSuccess,
-                                onError = { errorMessage = it }
-                            )
-                        }
+                // Gender Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = isGenderMenuExpanded,
+                    onExpandedChange = { isGenderMenuExpanded = it },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = when(selectedGender) {
+                            Gender.MALE -> "Male"
+                            Gender.FEMALE -> "Female"
+                            Gender.OTHER -> "Other"
+                        },
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = {
+                            Icon(Icons.Default.ArrowDropDown, "Dropdown arrow")
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        label = { Text("Gender") }
+                    )
+                    ExposedDropdownMenu(
+                        expanded = isGenderMenuExpanded,
+                        onDismissRequest = { isGenderMenuExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Male") },
+                            onClick = {
+                                selectedGender = Gender.MALE
+                                isGenderMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Female") },
+                            onClick = {
+                                selectedGender = Gender.FEMALE
+                                isGenderMenuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Other") },
+                            onClick = {
+                                selectedGender = Gender.OTHER
+                                isGenderMenuExpanded = false
+                            }
+                        )
                     }
-                } catch (e: Exception) {
-                    errorMessage = e.message ?: "Đã có lỗi xảy ra"
                 }
-            },
-            enabled = fullName.isNotEmpty() && email.isNotEmpty() &&
-                    password.isNotEmpty() && selectedDate != null
-        ) {
-            Text("Đăng ký")
-        }
 
-        if (errorMessage.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(errorMessage, color = Color.Red)
-        }
+                OutlinedTextField(
+                    value = selectedDate?.let { dateFormat.format(it) } ?: "",
+                    onValueChange = { },
+                    label = { Text("Birthdate") },
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            errorMessage = ""
+                            showDatePicker = true
+                        }) {
+                            Icon(Icons.Default.DateRange, "Select date")
+                        }
+                    },
+                    readOnly = true,
+                    enabled = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-        TextButton(onClick = { navController.navigate("login") }) {
-            Text("Đã có tài khoản? Đăng nhập ngay!")
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = email.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+                )
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = password.isNotEmpty() && password.length < 6
+                )
+
+                Button(
+                    onClick = {
+                        try {
+                            val dob = selectedDate ?: throw Exception("Please select a birthdate")
+
+                            when {
+                                fullName.length < 2 -> throw Exception("Name must be at least 2 characters")
+                                !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> throw Exception("Invalid email format")
+                                password.length < 6 -> throw Exception("Password must be at least 6 characters")
+                                else -> {
+                                    AuthViewModel.registerUser(
+                                        email = email,
+                                        password = password,
+                                        fullName = fullName,
+                                        gender = selectedGender,
+                                        dob = dob,
+                                        onSuccess = onRegisterSuccess,
+                                        onError = { errorMessage = it }
+                                    )
+                                }
+                            }
+                        } catch (e: Exception) {
+                            errorMessage = e.message ?: "An error occurred"
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    enabled = fullName.isNotEmpty() && email.isNotEmpty() &&
+                            password.isNotEmpty() && selectedDate != null,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF6D2E),
+                    ),
+                ) {
+                    Text("Register")
+                }
+
+                if (errorMessage.isNotEmpty()) {
+                    Text(
+                        errorMessage,
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+
+                TextButton(onClick = { navController.navigate("login") }) {
+                    Text("Already have an account? Log in now!")
+                }
+            }
         }
     }
 }
