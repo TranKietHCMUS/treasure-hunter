@@ -1,7 +1,9 @@
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.compose.*
@@ -10,7 +12,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.treasurehunter.data.viewModel.GameViewModel
+import com.example.treasurehunter.R
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+
+
+fun resizeIcon(resourceId: Int, width: Int, height: Int, context: Context): BitmapDescriptor {
+    val bitmap = BitmapFactory.decodeResource(context.resources, resourceId)
+    val resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, false)
+    return BitmapDescriptorFactory.fromBitmap(resizedBitmap)
+}
 
 @Composable
 fun MapScreen(
@@ -85,13 +101,17 @@ fun MapScreen(
                     if (!treasure.found) {
                         Marker(
                             state = MarkerState(position = treasure.location),
-                            title = "Kho báu $index",
-                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED),
+                            title = "Treasure $index",
+                            icon = remember {
+                                resizeIcon(R.drawable.treasure_icon, 80, 80, context) // Thay đổi kích thước 80x80 pixel
+                            },
+                            // Replace with your chest icon
                             onClick = {
-                                // Đánh dấu kho báu này là "đã tìm thấy"
+                                // Mark treasure as "found"
                                 GameViewModel.markTreasureAsFound(treasure.location)
-                                true // Xử lý sự kiện nhấn marker
+                                true // Handle marker click event
                             }
+
                         )
                     }
                 }
@@ -100,8 +120,10 @@ fun MapScreen(
                     Log.d("MapScreen", "Current user location: $it")
                     Marker(
                         state = MarkerState(position = it),
-                        title = "Vị trí người dùng",
-                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                        title = "Your Location",
+                        icon = remember {
+                            resizeIcon(R.drawable.user_location, 100, 100, context) // Thay đổi kích thước icon vị trí người dùng
+                        }
                     )
                 }
 
