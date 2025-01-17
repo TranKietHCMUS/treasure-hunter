@@ -771,7 +771,7 @@ public class ARActivity extends AppCompatActivity
                 Pose cameraPose = frame.getCamera().getDisplayOrientedPose();
 
                 double distance = calculateDistance(anchorPose, cameraPose);
-                if (distance < 10) { // Render if within 20 meters
+                if (distance < 10) {
                     renderAnchorObject(anchor, camera);
                 }
             }

@@ -43,6 +43,12 @@ fun MapScreen(
         )
     }
 
+    // Gọi startTrackingUserLocation để cập nhật vị trí liên tục
+    LaunchedEffect(context) {
+        GameViewModel.startTrackingUserLocation(context) { location ->
+//            Log.d("MapScreen", "Updated user location: $location")
+        }
+    }
 
 
     // Di chuyển camera đến vị trí game khi có vị trí
