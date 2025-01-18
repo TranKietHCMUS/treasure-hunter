@@ -19,7 +19,9 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
         val imageSize = 240.dp
 
         private val imageUrlList = listOf(
-            "https://hcmus.edu.vn/wp-content/uploads/2021/12/logo-khtn_remake-1.png"
+            "https://hcmus.edu.vn/wp-content/uploads/2021/12/logo-khtn_remake-1.png",
+            "https://upload.wikimedia.org/wikipedia/commons/0/00/Logo_UIT_updated.svg",
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlRxVxzJ_r6kqouMYfDStNMB9JGjdZHmL4grtHio-zky9prYZKZnObbngSHECDLx1rApA&usqp=CAU"
         )
         var imageUrl by mutableStateOf(imageUrlList[0])
         var images by mutableStateOf(Array(3) { Array(3) { Color.Gray } })
@@ -47,7 +49,9 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
         // Puzzle result
         var userInput by mutableStateOf("")
         private val resultList = listOf(
-            "HCMUS"
+            "HCMUS",
+            "UIT",
+            "UEL"
         )
         var correctAnswer by mutableStateOf(resultList[0])
 
