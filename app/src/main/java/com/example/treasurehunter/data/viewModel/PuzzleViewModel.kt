@@ -70,12 +70,17 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
             if (userInput == correctAnswer) {
                 isSolved = true
                 ScoreViewModel.score += (9 - ScoreViewModel.score) * (remainSubmition + 1)
-                ScoreViewModel.maxScore = max(ScoreViewModel.maxScore, ScoreViewModel.score)
-                AuthViewModel.updateHighestScore(ScoreViewModel.maxScore)
             } else {
                 remainSubmition--
                 userInput = ""
+
+                if (remainSubmition == 0) {
+                    isSolved = true
+                }
             }
+
+            ScoreViewModel.maxScore = max(ScoreViewModel.maxScore, ScoreViewModel.score)
+            AuthViewModel.updateHighestScore(ScoreViewModel.maxScore)
         }
     }
 }
