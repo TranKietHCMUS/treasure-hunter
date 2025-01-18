@@ -94,7 +94,7 @@ fun SolvedCoponent() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "You solved the puzzle!",
+            text = "The hidden treasure:",
             color = Color.White,
             fontSize = 15.sp
         )
