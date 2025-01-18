@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import com.example.app.auth.AuthViewModel
+import com.example.treasurehunter.data.model.ScreenMode
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.random.Random
@@ -64,18 +65,24 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
             remainSubmition = 3
 
             ScoreViewModel.maxScore = AuthViewModel.currentUser.value?.highestScore ?: 0
+            GameViewModel.changeScreenMode(ScreenMode.MAP)
         }
 
         fun checkAnswer() {
             if (userInput == correctAnswer) {
                 isSolved = true
                 ScoreViewModel.score += (9 - ScoreViewModel.score) * (remainSubmition + 1)
-                ScoreViewModel.maxScore = max(ScoreViewModel.maxScore, ScoreViewModel.score)
-                AuthViewModel.updateHighestScore(ScoreViewModel.maxScore)
             } else {
                 remainSubmition--
                 userInput = ""
+
+                if (remainSubmition == 0) {
+                    isSolved = true
+                }
             }
+
+            ScoreViewModel.maxScore = max(ScoreViewModel.maxScore, ScoreViewModel.score)
+            AuthViewModel.updateHighestScore(ScoreViewModel.maxScore)
         }
     }
 }
