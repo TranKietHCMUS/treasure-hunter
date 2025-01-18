@@ -64,8 +64,7 @@ class GameViewModel @Inject constructor() : ViewModel()  {
         // Tạo danh sách các kho báu từ tọa độ ngẫu nhiên
         fun generateTreasures(center: LatLng, radius: Double, count: Int = 9) {
             val treasureList = mutableListOf<Treasure>()
-            treasureList.add(Treasure(location = LatLng(10.7481369,106.7047963)))
-            for (i in 2..count) {
+            for (i in 1..count) {
                 val randomPoint = generateRandomLocation(center, radius)
                 treasureList.add(Treasure(location = randomPoint))
             }
