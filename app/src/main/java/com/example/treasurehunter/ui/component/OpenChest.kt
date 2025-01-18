@@ -20,10 +20,12 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.treasurehunter.R
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
+import kotlinx.coroutines.delay
 
 @Preview
 @Composable
 fun OpenChest() {
+
     val treasure by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.treasure)
     )
@@ -34,6 +36,7 @@ fun OpenChest() {
     )
 
     LaunchedEffect ( key1 = treasureProgress ) {
+        delay(500)
         if (treasureProgress == 1f) {
             TreasureViewModel.hideChest()
         }

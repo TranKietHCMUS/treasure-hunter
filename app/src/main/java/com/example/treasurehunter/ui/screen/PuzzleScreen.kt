@@ -86,7 +86,7 @@ fun InputComponent() {
 }
 
 @Composable
-fun SolvedCoponent() {
+fun SolvedComponent() {
     val navController = LocalNavController.current
     Column(
         modifier = Modifier.fillMaxWidth().padding(20.dp),
@@ -225,7 +225,7 @@ fun PuzzleScreen() {
         Spacer(modifier = Modifier.height(5.dp))
 
         if (PuzzleViewModel.isSolved) {
-            SolvedCoponent()
+            SolvedComponent()
         } else {
             InputComponent()
         }

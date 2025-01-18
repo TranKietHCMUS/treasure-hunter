@@ -21,7 +21,7 @@ class TreasureViewModel @Inject constructor() : ViewModel() {
         fun hideChest() {
             isChestShow = false
         }
-
+        @JvmStatic
         fun openChest() {
             showChest()
             PuzzleViewModel.showPiece()
