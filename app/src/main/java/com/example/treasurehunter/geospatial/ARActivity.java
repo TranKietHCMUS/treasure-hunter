@@ -16,6 +16,10 @@
 
 package com.example.treasurehunter.geospatial;
 
+import static com.example.treasurehunter.data.viewModel.GameViewModel.getCoordinatesAsList;
+import static com.example.treasurehunter.data.viewModel.GameViewModel.markTreasureAsFound;
+import static com.example.treasurehunter.data.viewModel.GameViewModel.changeScreenMode;
+
 import com.example.treasurehunter.R;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -23,13 +27,11 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.GestureDetector;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.GuardedBy;
@@ -37,7 +39,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.treasurehunter.data.viewModel.LocationViewModel;
+import com.example.treasurehunter.data.model.ScreenMode;
+import com.example.treasurehunter.data.model.Treasure;
+import com.example.treasurehunter.data.viewModel.TreasureViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.ar.core.Anchor;
@@ -54,7 +58,6 @@ import com.google.ar.core.Session;
 import com.google.ar.core.StreetscapeGeometry;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.VpsAvailability;
-import com.google.ar.core.VpsAvailabilityFuture;
 import com.example.treasurehunter.common.helpers.CameraPermissionHelper;
 import com.example.treasurehunter.common.helpers.DisplayRotationHelper;
 import com.example.treasurehunter.common.helpers.FullScreenHelper;
@@ -81,20 +84,14 @@ import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException;
 import com.google.ar.core.exceptions.UnsupportedConfigurationException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -109,11 +106,9 @@ public class ARActivity extends AppCompatActivity
         VpsAvailabilityNoticeDialogFragment.NoticeDialogListener,
         PrivacyNoticeDialogFragment.NoticeDialogListener {
 
-    private static final String TAG = GeospatialActivity.class.getSimpleName();
+    private static final String TAG = ARActivity.class.getSimpleName();
 
-    private static final String SHARED_PREFERENCES_SAVED_ANCHORS = "SHARED_PREFERENCES_SAVED_ANCHORS";
     private static final String ALLOW_GEOSPATIAL_ACCESS_KEY = "ALLOW_GEOSPATIAL_ACCESS";
-    private static final String ANCHOR_MODE = "ANCHOR_MODE";
 
     private static final float Z_NEAR = 0.1f;
     private static final float Z_FAR = 1000f;
@@ -130,7 +125,6 @@ public class ARActivity extends AppCompatActivity
     private static final double LOCALIZED_ORIENTATION_YAW_ACCURACY_HYSTERESIS_DEGREES = 10;
 
     private static final int LOCALIZING_TIMEOUT_SECONDS = 180;
-    private static final int MAXIMUM_ANCHORS = 20;
 
     // Rendering. The Renderers are created here, and initialized when the GL surface is created.
     private GLSurfaceView surfaceView;
@@ -177,6 +171,8 @@ public class ARActivity extends AppCompatActivity
     private TextView statusTextView;
     private TextView tapScreenTextView;
 
+    private Button mapButton;
+    private Button puzzleButton;
 
     private PlaneRenderer planeRenderer;
     private BackgroundRenderer backgroundRenderer;
@@ -222,12 +218,12 @@ public class ARActivity extends AppCompatActivity
 
     // Streetscape geometry.
     private final ArrayList<float[]> wallsColor = new ArrayList<>();
+    private final List<Treasure> coordinates = getCoordinatesAsList();
 
     private Shader streetscapeGeometryTerrainShader;
     private Shader streetscapeGeometryBuildingShader;
     // A set of planes representing building outlines and floors.
     private final Map<StreetscapeGeometry, Mesh> streetscapeGeometryToMeshes = new HashMap<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -239,10 +235,19 @@ public class ARActivity extends AppCompatActivity
         statusTextView = findViewById(R.id.status_text_view);
         tapScreenTextView = findViewById(R.id.tap_screen_text_view);
 
-        Switch streetscapeGeometrySwitch = findViewById(R.id.streetscape_geometry_switch);
-        // Initial terrain anchor mode is DISABLED.
-        streetscapeGeometrySwitch.setChecked(false);
-        streetscapeGeometrySwitch.setOnCheckedChangeListener(this::onRenderStreetscapeGeometryChanged);
+        mapButton = findViewById(R.id.map_button);
+        puzzleButton = findViewById(R.id.puzzle_button);
+
+        mapButton.setOnClickListener(v -> {
+            finish(); // Clean up AR session
+            changeScreenMode(ScreenMode.MAP);
+        });
+
+        puzzleButton.setOnClickListener(v -> {
+            finish(); // Clean up AR session
+            changeScreenMode(ScreenMode.PUZZLE);
+        });
+
 
         displayRotationHelper = new DisplayRotationHelper(/* activity= */ this);
 
@@ -417,15 +422,14 @@ public class ARActivity extends AppCompatActivity
     }
 
     private void checkVpsAvailability(double latitude, double longitude) {
-        final VpsAvailabilityFuture future =
-                session.checkVpsAvailabilityAsync(
-                        latitude,
-                        longitude,
-                        availability -> {
-                            if (availability != VpsAvailability.AVAILABLE) {
-                                showVpsNotAvailabilityNoticeDialog();
-                            }
-                        });
+        session.checkVpsAvailabilityAsync(
+                latitude,
+                longitude,
+                availability -> {
+                    if (availability != VpsAvailability.AVAILABLE) {
+                        showVpsNotAvailabilityNoticeDialog();
+                    }
+                });
     }
 
     private void showVpsNotAvailabilityNoticeDialog() {
@@ -495,11 +499,11 @@ public class ARActivity extends AppCompatActivity
             Texture virtualObjectTexture =
                     Texture.createFromAsset(
                             render,
-                            "models/spatial_marker_baked.png",
+                            "models/TreasureChest_UV_03.png",  // Update this path if needed
                             Texture.WrapMode.CLAMP_TO_EDGE,
                             Texture.ColorFormat.SRGB);
 
-            virtualObjectMesh = Mesh.createFromAsset(render, "models/geospatial_marker.obj");
+            virtualObjectMesh = Mesh.createFromAsset(render, "models/TreasureChest.obj");
             geospatialAnchorVirtualObjectShader =
                     Shader.createFromAssets(
                                     render,
@@ -569,31 +573,20 @@ public class ARActivity extends AppCompatActivity
             return;
         }
 
-        // Initialize anchors from external file if not already done
+        // Initialize anchors from coordinates list if not already done
         if (!hasInitializedAnchors) {
-            // Define coordinates for anchors
-            List<Pair<Double, Double>> coordinates = Arrays.asList(
-                    new Pair<>(10.7481774, 106.704646),
-                    new Pair<>(10.748627060802958, 106.704646),
-                    new Pair<>(10.748495358203005, 106.70496963596538),
-                    new Pair<>(10.7481774, 106.70510369037152),
-                    new Pair<>(10.747859441796994, 106.70496963596538),
-                    new Pair<>(10.74772773919704, 106.704646),
-                    new Pair<>(10.747859441796994, 106.70432236403461),
-                    new Pair<>(10.7481774, 106.70418830962848),
-                    new Pair<>(10.748495358203005, 106.70432236403461)
-            );
-
             Earth earth = session.getEarth();
             if (earth != null && earth.getTrackingState() == TrackingState.TRACKING) {
-                for (Pair<Double, Double> coord : coordinates) {
-                    double latitude = coord.first;
-                    double longitude = coord.second;
-                    double altitude = 0; // Default altitude
-                    float[] quaternion = {0, 0, 0, 1}; // Default orientation
+                for (Treasure coord : coordinates) {
+                    if (!coord.getFound()) {
+                        double latitude = coord.getLocation().latitude;
+                        double longitude = coord.getLocation().longitude;
+                        double altitude = 0; // Default altitude
+                        float[] quaternion = {0, 0.7071f, 0, 0.7071f}; // Default orientation
 
-                    // Create an anchor at the specified coordinates
-                    createAnchor(earth, latitude, longitude, altitude, quaternion);
+                        // Create an anchor at the specified coordinates
+                        createAnchor(earth, latitude, longitude, altitude, quaternion);
+                    }
                 }
                 hasInitializedAnchors = true;
             } else {
@@ -616,7 +609,7 @@ public class ARActivity extends AppCompatActivity
         // Notify ARCore session that the view size changed so that the perspective matrix and
         // the video background can be properly adjusted.
         displayRotationHelper.updateSessionIfNeeded(session);
-        //updateStreetscapeGeometries(session.getAllTrackables(StreetscapeGeometry.class));
+        updateStreetscapeGeometries(session.getAllTrackables(StreetscapeGeometry.class));
 
         // Obtain the current frame from ARSession. When the configuration is set to
         // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the
@@ -679,17 +672,9 @@ public class ARActivity extends AppCompatActivity
                         statusTextView.setText(lastStatusText);
                     });
         }
-        synchronized (anchorsLock) {
-            if (anchors.size() >= MAXIMUM_ANCHORS) {
-                runOnUiThread(
-                        () -> {
-                            tapScreenTextView.setVisibility(View.INVISIBLE);
-                        });
-            }
-        }
 
         // Handle user input.
-        //handleTap(frame, camera.getTrackingState());
+        //handleTap(frame);
 
         // -- Draw background
 
@@ -768,26 +753,52 @@ public class ARActivity extends AppCompatActivity
             }
         }
         render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f);
-        // Render virtual objects if phone is near anchors
         synchronized (anchorsLock) {
-            for (Anchor anchor : anchors) {
+            for (int i = 0; i < anchors.size(); i++) {
+                Anchor anchor = anchors.get(i);
                 if (anchor.getTrackingState() != TrackingState.TRACKING) {
                     continue;
                 }
 
                 Pose anchorPose = anchor.getPose();
                 Pose cameraPose = frame.getCamera().getDisplayOrientedPose();
-
                 double distance = calculateDistance(anchorPose, cameraPose);
-                if (distance < 20) { // Render if within 20 meters
+
+                // Check if camera is focused on anchor (within certain angle and distance)
+
+
+                // If camera is looking at anchor (within 20 degrees) and close enough (within 2 meters)
+                if (distance < 4) {
+                    // Make the anchor "tappable"
+                    runOnUiThread(() -> {
+                        tapScreenTextView.setVisibility(View.VISIBLE);
+                        tapScreenTextView.setText(R.string.tap_on_treasure);
+                    });
+
+                    // Handle tap on anchor
+                    synchronized (singleTapLock) {
+                        if (queuedSingleTap != null) {
+                            finish();
+                            markTreasureAsFound(coordinates.get(i).getLocation());
+                            changeScreenMode(ScreenMode.PUZZLE);
+                            TreasureViewModel.openChest();
+                            queuedSingleTap = null;
+                        }
+                    }
+                } else {
+                    runOnUiThread(() -> tapScreenTextView.setVisibility(View.INVISIBLE));
+                }
+
+                if (distance < 20) {
                     renderAnchorObject(anchor, camera);
                 }
             }
+
             if (!anchors.isEmpty()) {
                 String anchorMessage =
                         getResources()
                                 .getQuantityString(
-                                        R.plurals.status_anchors_set, anchors.size(), anchors.size(), MAXIMUM_ANCHORS);
+                                        R.plurals.status_anchors_set, anchors.size(), anchors.size());
                 runOnUiThread(
                         () -> {
                             statusTextView.setVisibility(View.VISIBLE);
@@ -795,11 +806,22 @@ public class ARActivity extends AppCompatActivity
                         });
             }
         }
-
-        // Compose the virtual scene with the background.
+        // Compose the virtual scene withthe background.
         backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
     }
 
+    private void updateStreetscapeGeometries(Collection<StreetscapeGeometry> streetscapeGeometries) {
+        for (StreetscapeGeometry streetscapeGeometry : streetscapeGeometries) {
+            // If the Streetscape Geometry node is already added to the scene, then we'll simply update
+            // the pose.
+            if (streetscapeGeometryToMeshes.containsKey(streetscapeGeometry)) {
+            } else {
+                // Otherwise, we create a StreetscapeGeometry mesh and add it to the scene.
+                Mesh mesh = getSampleRenderMesh(streetscapeGeometry);
+                streetscapeGeometryToMeshes.put(streetscapeGeometry, mesh);
+            }
+        }
+    }
 
     private Mesh getSampleRenderMesh(StreetscapeGeometry streetscapeGeometry) {
         FloatBuffer streetscapeGeometryBuffer = streetscapeGeometry.getMesh().getVertexList();
@@ -838,7 +860,7 @@ public class ARActivity extends AppCompatActivity
     /** Change behavior depending on the current {@link State} of the application. */
     private void updateGeospatialState(Earth earth) {
         if (earth.getEarthState() != Earth.EarthState.ENABLED) {
-            state = State.EARTH_STATE_ERROR;
+            state =State.EARTH_STATE_ERROR;
             return;
         }
         if (earth.getTrackingState() != TrackingState.TRACKING) {
@@ -881,16 +903,6 @@ public class ARActivity extends AppCompatActivity
                 && geospatialPose.getOrientationYawAccuracy()
                 <= LOCALIZING_ORIENTATION_YAW_ACCURACY_THRESHOLD_DEGREES) {
             state = State.LOCALIZED;
-            synchronized (anchorsLock) {
-                final int anchorNum = anchors.size();
-                if (anchorNum == 0) {
-                    createAnchorFromSharedPreferences(earth);
-                }
-                if (anchorNum < MAXIMUM_ANCHORS) {
-                    runOnUiThread(
-                            () -> tapScreenTextView.setVisibility(View.VISIBLE));
-                }
-            }
             return;
         }
 
@@ -944,11 +956,29 @@ public class ARActivity extends AppCompatActivity
                                 quaternion[1],
                                 quaternion[2],
                                 quaternion[3],
-                                geospatialPose.getOrientationYawAccuracy());
+                                nearestDistance(geospatialPose));
         runOnUiThread(
                 () -> geospatialPoseTextView.setText(poseText));
     }
 
+    private float nearestDistance (GeospatialPose geospatialPose) {
+        float nearestDistance = Float.MAX_VALUE;
+        for (Treasure anchors : coordinates) {
+            float disc = (float)coordinatesDistance(
+                    geospatialPose.getLatitude(),
+                    anchors.getLocation().latitude,
+                    geospatialPose.getLongitude(),
+                    anchors.getLocation().longitude,
+                    geospatialPose.getAltitude(),
+                    0
+            );
+
+            if (disc < nearestDistance) {
+                nearestDistance = disc;
+            }
+        }
+        return nearestDistance;
+    }
     // Return the scale in range [1, 2] after mapping a distance between camera and anchor to [2, 20].
     private float getScale(Pose anchorPose, Pose cameraPose) {
         double distance =
@@ -956,19 +986,9 @@ public class ARActivity extends AppCompatActivity
                         Math.pow(anchorPose.tx() - cameraPose.tx(), 2.0)
                                 + Math.pow(anchorPose.ty() - cameraPose.ty(), 2.0)
                                 + Math.pow(anchorPose.tz() - cameraPose.tz(), 2.0));
-        double mapDistance = Math.min(Math.max(2, distance), 20);
-        return (float) (mapDistance - 2) / (20 - 2) + 1;
-    }
-
-    /** Menu button to choose anchor type. */
-    protected boolean settingsMenuClick(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.anchor_reset) {
-            return true;
-        }
-        item.setChecked(!item.isChecked());
-        sharedPreferences.edit().putInt(ANCHOR_MODE, itemId).apply();
-        return false;
+        // Adjust these values based on your chest model's size
+        double mapDistance = Math.min(Math.max(1, distance), 15);
+        return (float) (mapDistance - 1) / (15 - 1) + 0.5f; // Smaller scale range
     }
 
     /** Create an anchor at a specific geodetic location using a EUS quaternion. */
@@ -985,35 +1005,6 @@ public class ARActivity extends AppCompatActivity
                         quaternion[3]);
         synchronized (anchorsLock) {
             anchors.add(anchor);
-        }
-    }
-
-    /** Creates all anchors that were stored in the {@link SharedPreferences}. */
-    private void createAnchorFromSharedPreferences(Earth earth) {
-        Set<String> anchorParameterSet =
-                sharedPreferences.getStringSet(SHARED_PREFERENCES_SAVED_ANCHORS, null);
-        if (anchorParameterSet == null) {
-            return;
-        }
-
-        for (String anchorParameters : anchorParameterSet) {
-            String[] parameters = anchorParameters.split(",");
-            if (parameters.length != 7) {
-                Log.d(
-                        TAG, "Invalid number of anchor parameters. Expected four, found " + parameters.length);
-                continue;
-            }
-            double latitude = Double.parseDouble(parameters[0]);
-            double longitude = Double.parseDouble(parameters[1]);
-            double altitude = Double.parseDouble(parameters[2]);
-            float[] quaternion =
-                    new float[] {
-                            Float.parseFloat(parameters[3]),
-                            Float.parseFloat(parameters[4]),
-                            Float.parseFloat(parameters[5]),
-                            Float.parseFloat(parameters[6])
-                    };
-            createAnchor(earth, latitude, longitude, altitude, quaternion);
         }
     }
 
@@ -1041,43 +1032,32 @@ public class ARActivity extends AppCompatActivity
      * Handles the most recent user tap.
      *
      * <p>We only ever handle one tap at a time, since this app only allows for a single anchor.
-     *
-     * @param frame the current AR frame
-     * @param cameraTrackingState the current camera tracking state
+     * \@param \frame the current AR frame
+     * \@param \cameraTrackingState the current camera tracking state
      */
-    private void handleTap(Frame frame, TrackingState cameraTrackingState) {
-        // Handle taps. Handling only one tap per frame, as taps are usually low frequency
-        // compared to frame rate.
-        synchronized (singleTapLock) {
-            synchronized (anchorsLock) {
-                queuedSingleTap = null;
-            }
-        }
+
+    private double calculateDistance(Pose anchorPose, Pose cameraPose) {
+        return Math.sqrt(Math.pow(anchorPose.tx() - cameraPose.tx(), 2.0) + Math.pow(anchorPose.ty() - cameraPose.ty(), 2.0) + Math.pow(anchorPose.tz() - cameraPose.tz(), 2.0));
     }
 
-    private double calculateDistance(Pose anchorPose, Pose cameraPose){
-        return Math.sqrt(
-                Math.pow(anchorPose.tx() - cameraPose.tx(), 2.0)
-                        + Math.pow(anchorPose.ty() - cameraPose.ty(), 2.0)
-                        + Math.pow(anchorPose.tz() - cameraPose.tz(), 2.0)
-        );
-    }
+    public static double coordinatesDistance(double lat1, double lat2, double lon1,
+                                             double lon2, double el1, double el2) {
 
+        final int R = 6371; // Radius of the earth
 
-    private List<Pair<Double, Double>> readCoordinatesFromFile() throws IOException {
-        List<Pair<Double, Double>> coordinates = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get("input.txt"))));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split(",");
-            if (parts.length == 2) {
-                double latitude = Double.parseDouble(parts[0].trim());
-                double longitude = Double.parseDouble(parts[1].trim());
-                coordinates.add(new Pair<>(latitude, longitude));
-            }
-        }
-        reader.close();
-        return coordinates;
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // convert to meters
+
+        double height = el1 - el2;
+
+        distance = Math.pow(distance, 2) + Math.pow(height, 2);
+
+        return Math.sqrt(distance);
     }
 
     private void renderAnchorObject(Anchor anchor, Camera camera) {
@@ -1090,6 +1070,7 @@ public class ARActivity extends AppCompatActivity
         scaleMatrix[10] = scale;
         Matrix.multiplyMM(modelMatrix, 0, modelMatrix, 0, scaleMatrix, 0);
 
+        // Update rotation for treasure chest model
         float[] rotationMatrix = new float[16];
         Matrix.setRotateM(rotationMatrix, 0, 180, 0.0f, 1.0f, 0.0f);
         float[] rotationModelMatrix = new float[16];
@@ -1101,5 +1082,5 @@ public class ARActivity extends AppCompatActivity
         geospatialAnchorVirtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
         render.draw(virtualObjectMesh, geospatialAnchorVirtualObjectShader, virtualSceneFramebuffer);
     }
-
 }
+

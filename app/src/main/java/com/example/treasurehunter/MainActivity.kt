@@ -41,7 +41,6 @@ import com.example.app.auth.RegisterScreen
 import com.example.treasurehunter.ui.screen.CreateRoomScreen
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
 import com.example.treasurehunter.ui.component.OpenChest
-import com.example.treasurehunter.geospatial.GeospatialActivity
 import com.example.treasurehunter.ui.screen.ARScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
 import com.example.treasurehunter.ui.screen.InGameScreen
@@ -101,7 +100,7 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("test") { TestScreen() }
                 composable("ar") { ARScreen() }
                 composable("create-room") { CreateRoomScreen() }
-                composable(route = "in-game") { InGameScreen() }
+                composable("in-game") { InGameScreen() }
                 composable("login") { LoginScreen() { navController.navigate("home") } }
                 composable("register") { RegisterScreen() { navController.navigate("login") } }
                 composable("profile") { ProfileScreen() }

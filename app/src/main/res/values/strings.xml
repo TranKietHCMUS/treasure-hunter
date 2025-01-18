@@ -16,16 +16,16 @@
     <string translatable="false" name="terrain_anchor_no_result_yet">Still resolving the terrain anchor. Please make sure you\'re in an area that has VPS coverage.</string>
     <string translatable="false" name="terrain_anchor_resource_exhausted">Too many terrain anchors have already been held. Clear all anchors to create new ones.</string>
     <plurals name="status_anchors_set">
-        <item quantity="one">%d / %d Anchor set</item>
-        <item quantity="other">%d / %d Anchors set</item>
+        <item quantity="one">Now, let\'\s solve the Puzzle and win the Game 🥸</item>
+        <item quantity="other">There are %d chests waiting for you to find them 😼</item>
+        <item quantity="zero">There is only %d more chest 🥰</item>
     </plurals>
     <plurals name="status_anchors_cleared">
         <item quantity="one">%d Anchor cleared</item>
         <item quantity="other">%d Anchors cleared</item>
     </plurals>
     <string translatable="false" name="geospatial_pose_not_tracking">GEOSPATIAL POSE: Not tracking</string>
-    <string translatable="false" name="geospatial_pose">LAT/LNG: %.6f˚, %.6f˚\n\t\t\tACCURACY: %.2fm\nALTITUDE: %.2fm\n\t\t\tACCURACY: %.2fm\nORIENTATION: [%.1f, %.1f, %.1f, %.1f]\n\t\t\tYAW ACCURACY: %.1f˚</string>
-
+    <string translatable="false" name="geospatial_pose">LAT/LNG: %.6f˚, %.6f˚\n\t\t\tACCURACY: %.2fm\nALTITUDE: %.2fm\n\t\t\tACCURACY: %.2fm\nORIENTATION: [%.1f, %.1f, %.1f, %.1f]\n\t\t\tNEAREST CHEST: %.1fm</string>
     <!-- Strings used in privacy notice dialog messages. [CHAR_LIMIT=NONE] -->
     <string  name="share_experience_title">AR in the real world</string>
     <!-- Privacy notice message. [CHAR_LIMIT=NONE] -->
@@ -43,6 +43,6 @@
     <string name="vps_unavailable_message">Your current location does not have VPS coverage. Your session will be using your GPS signal only if VPS is not available.</string>
     <!-- VPS unavailable notice continue. [CHAR_LIMIT=NONE] -->
     <string name="continue_button">Continue</string>
-
+    <string name="tap_on_treasure">Tap to collect treasure!</string>
     <string name="java_file_text">Java File</string>
 </resources>

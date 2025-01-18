@@ -168,9 +168,9 @@ fun RadiusSelection(selectedRadius: Double?, onRadiusSelected: (Double) -> Unit)
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         val radii = listOf(
+            Pair("200m", 200.0),
             Pair("500m", 500.0),
             Pair("1km", 1000.0),
-            Pair("2km", 2000.0),
         )
 
         radii.forEach { (text, value) ->

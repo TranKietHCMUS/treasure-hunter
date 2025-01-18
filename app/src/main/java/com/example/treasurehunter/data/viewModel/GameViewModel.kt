@@ -38,7 +38,7 @@ import com.google.android.gms.tasks.OnTokenCanceledListener
 class GameViewModel @Inject constructor() : ViewModel()  {
     companion object {
         var screenMode by mutableStateOf(ScreenMode.MAP)
-
+        @JvmStatic
         fun changeScreenMode(mode: ScreenMode) {
             screenMode = mode
         }
@@ -77,6 +77,7 @@ class GameViewModel @Inject constructor() : ViewModel()  {
         }
 
         // Đánh dấu kho báu đã tìm thấy
+        @JvmStatic
         fun markTreasureAsFound(location: LatLng) {
             _treasures.value = _treasures.value.map {
                 if (it.location == location) it.copy(found = true) else it
@@ -175,9 +176,10 @@ class GameViewModel @Inject constructor() : ViewModel()  {
                 return
             }
 
-            // Sử dụng LocationRequest.Builder với thời gian cập nhật 2 giây
-            val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000) // 2 giây
-                .setMinUpdateDistanceMeters(0f) // Nhận tất cả thay đổi vị trí
+            // Sử dụng LocationRequest.Builder thay cho LocationRequest.create()
+            val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
+                .setIntervalMillis(1000)  // Cập nhật mỗi 1 giây
+                .setMinUpdateDistanceMeters(0f) // Cập nhật nếu người dùng di chuyển ít nhất 10m
                 .build()
 
             val locationCallback = object : LocationCallback() {
@@ -186,19 +188,19 @@ class GameViewModel @Inject constructor() : ViewModel()  {
                         val userLocation = LatLng(location.latitude, location.longitude)
                         _currentUserLocation.value = userLocation
 
-                        // Log vị trí người dùng mỗi khi nhận được
-//                        Log.d("GameViewModel", "User location every 2s: $userLocation")
+                        // Log vị trí người dùng mỗi khi thay đổi
+                        Log.d("GameViewModel", "Updated user location: $userLocation")
 
                         onLocationChanged(userLocation)
                     }
                 }
             }
 
-            // Bắt đầu theo dõi vị trí với khoảng thời gian cập nhật là 2 giây
+            // Bắt đầu theo dõi vị trí
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
-                null // Chạy trên main thread
+                null // Chạy trên main thread mặc định
             )
         }
 
@@ -206,6 +208,15 @@ class GameViewModel @Inject constructor() : ViewModel()  {
         fun stopTrackingUserLocation() {
             if (::fusedLocationProviderClient.isInitialized) {
                 fusedLocationProviderClient.removeLocationUpdates(object : LocationCallback() {})
+            }
+        }
+
+        // Make sure Treasure data class has public properties
+        // If not already defined, add this:
+        @JvmStatic
+        fun getCoordinatesAsList(): List<Treasure> {
+            return _treasures.value.map { treasure ->
+                treasure
             }
         }
     }
