@@ -45,6 +45,7 @@ import com.example.treasurehunter.geospatial.GeospatialActivity
 import com.example.treasurehunter.ui.screen.ARScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
 import com.example.treasurehunter.ui.screen.InGameScreen
+import com.example.treasurehunter.ui.screen.ProfileScreen
 //import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import com.example.treasurehunter.ui.screen.TestScreen
 import com.example.treasurehunter.ui.theme.TreasureHunterTheme
@@ -103,6 +104,7 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("in-game") { InGameScreen() }
                 composable("login") { LoginScreen() { navController.navigate("home") } }
                 composable("register") { RegisterScreen() { navController.navigate("login") } }
+                composable("profile") { ProfileScreen() }
             }
         }
 
