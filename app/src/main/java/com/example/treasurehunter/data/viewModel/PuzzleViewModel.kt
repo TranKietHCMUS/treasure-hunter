@@ -65,6 +65,7 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
             remainSubmition = 3
 
             ScoreViewModel.maxScore = AuthViewModel.currentUser.value?.highestScore ?: 0
+            ScoreViewModel.score = 0
             GameViewModel.changeScreenMode(ScreenMode.MAP)
         }
 
