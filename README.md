@@ -69,4 +69,9 @@ There are our team's infomations:
 
 ## Setting
 
-// Setting content
+1. Install Android Studio.
+2. Clone and open project.
+3. Synchronize gradle.
+4. Connect to your device, build and run app.
+
+For the software to work, make sure your device supports ARcore and GPS/VPS.
