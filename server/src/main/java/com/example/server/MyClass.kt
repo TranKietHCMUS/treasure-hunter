@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap
 data class Room(val id: String, val clients: MutableList<Socket>)
 
 fun main() = runBlocking {
-    val server = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("127.0.0.1", 8080)
+    val server = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("192.168.1.8", 8080)
     println("Server is running at ${server.localAddress}")
 
     // Quản lý danh sách phòng
@@ -32,8 +32,10 @@ fun main() = runBlocking {
                 when {
                     message.startsWith("CREATE_ROOM") -> {
                         val roomId = (100000..999999).random().toString()
+                        println("   Room id: $roomId")
                         rooms[roomId] = Room(roomId, mutableListOf(client))
                         output.writeStringUtf8("ROOM_CREATED:$roomId\n")
+                        println("   Created successfully")
                     }
 
                     message.startsWith("JOIN_ROOM:") -> {
