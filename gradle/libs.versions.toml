@@ -33,6 +33,7 @@ firebaseDatabaseKtx = "21.0.0"
 firebaseFirestoreKtx = "25.1.1"
 firebaseCommonKtx = "21.0.0"
 firebaseAuthKtx = "23.1.0"
+jetbrainsKotlinJvm = "1.9.0"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -79,4 +80,5 @@ firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx",
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 

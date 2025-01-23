@@ -1,0 +1,28 @@
+plugins {
+    id 'java-library'
+    alias(libs.plugins.jetbrains.kotlin.jvm)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+    }
+}
+
+dependencies {
+    // Ktor server dependencies
+    implementation("io.ktor:ktor-server-core:2.3.4")
+    implementation("io.ktor:ktor-server-netty:2.3.4")
+
+    // Logging dependency (Logback)
+    implementation("ch.qos.logback:logback-classic:1.4.8")
+
+    // Optional: Test dependencies (nếu cần)
+    testImplementation("io.ktor:ktor-server-tests:2.3.4")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.8.0")
+}
