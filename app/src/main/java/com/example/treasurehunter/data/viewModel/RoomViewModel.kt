@@ -20,6 +20,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
     val roomId = mutableStateOf("")
     val message = mutableStateOf("")
     val joinedRoom = mutableStateOf("")
+    val members = mutableStateOf("")
 
     fun connectToServer(host: String, port: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -32,11 +33,28 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                 Log.i("SOCKET", "Connected to server $host:$port")
 
                 // Nhận thông điệp từ server
-//                delay(50)
+                delay(50)
                 val response = input?.readUTF8Line()
                 message.value = response ?: "No response from server"
             } catch (e: Exception) {
                 message.value = "Error: ${e.message}"
+            }
+        }
+    }
+
+    fun fetchMembers(roomCode: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                output?.writeStringUtf8("FETCH_MEMBERS, ROOM_ID:$roomCode\n")
+                delay(50)
+                val response = input?.readUTF8Line()
+                response?.let {
+                    if (it.startsWith("MEMBERS:")) {
+                        members.value = it.split(":")[1]
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("SOCKET", "fetchMembers: ${e.message}")
             }
         }
     }
@@ -46,7 +64,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
             try {
                 output?.writeStringUtf8("CREATE_ROOM, PLAYER_ID:${SocketViewModel.playerID}\n")
                 Log.i("SOCKET", "create room:")
-//                delay(50)
+                delay(50)
                 val response = input?.readUTF8Line()
                 Log.i("SOCKET", "create room response: $response")
                 response?.let {
@@ -64,7 +82,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 output?.writeStringUtf8("JOIN_ROOM, PLAYER_ID:${SocketViewModel.playerID}, ROOM_ID:$roomCode\n")
-//                delay(50)
+                delay(50)
                 val response = input?.readUTF8Line()
                 response?.let {
                     if (it.startsWith("JOIN_SUCCESS:")) {

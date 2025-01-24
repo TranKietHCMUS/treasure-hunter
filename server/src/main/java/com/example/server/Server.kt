@@ -33,7 +33,7 @@ fun main() = runBlocking {
                 when {
                     message.startsWith("CREATE_ROOM") -> {
                         val playerMessage = message.split(",")[1]
-                        println("   Player message: $playerMessage\n")
+                        println("   Player message: $playerMessage")
                         val playerId = playerMessage.split(":")[1]
 
                         val roomId = (100000..999999).random().toString()
@@ -57,6 +57,27 @@ fun main() = runBlocking {
                             rooms[roomId]?.clients?.forEach {
                                 it.openWriteChannel(autoFlush = true)
                                     .writeStringUtf8("PLAYER_JOINED\n")
+                            }
+
+                            ID2Player[playerId] = client
+                        } else {
+                            output.writeStringUtf8("ERROR:ROOM_NOT_FOUND\n")
+                        }
+                    }
+
+                    message.startsWith("FETCH_MEMBERS") -> {
+                        val roomMessage = message.split(",")[1]
+                        val roomId = roomMessage.split(":")[1]
+                        val room = rooms[roomId]
+
+                        if (rooms.containsKey(roomId)) {
+                            var memberMessage = "MEMBERS:"
+                            room?.clients?.forEach {
+                                memberMessage += it.remoteAddress.toString() + ","
+                            }
+                            println("   Members: $memberMessage")
+                            room?.clients?.forEach {
+                                it.openWriteChannel(autoFlush = true).writeStringUtf8(memberMessage)
                             }
                         } else {
                             output.writeStringUtf8("ERROR:ROOM_NOT_FOUND\n")

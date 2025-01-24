@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.treasurehunter.data.viewModel.SocketViewModel
+import kotlinx.coroutines.delay
 
 @Preview
 @Composable
@@ -22,9 +23,12 @@ fun CreateRoomScreen() {
     val viewModel = SocketViewModel.room
 
     val roomId by viewModel.roomId
-    val message by viewModel.message
-    val joinedRoom by viewModel.joinedRoom
-    val navController = LocalNavController.current
+    val members by viewModel.members
+
+    fun createRoom() {
+        viewModel.createRoom()
+        viewModel.fetchMembers(roomId)
+    }
 
     Column(
         modifier = Modifier
@@ -49,10 +53,11 @@ fun CreateRoomScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Tạo phòng
-            Button(onClick = { SocketViewModel.room.createRoom() }) {
+            Button(onClick = { createRoom() }) {
                 Text("Create Room")
             }
             Text(text = "Room ID: $roomId")
+            Text(text = "Members: $members")
 
             Spacer(modifier = Modifier.height(16.dp))
         }
