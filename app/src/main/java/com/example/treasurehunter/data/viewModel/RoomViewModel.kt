@@ -10,8 +10,9 @@ import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RoomViewModel : ViewModel() {
+class RoomViewModel @Inject constructor() : ViewModel() {
     private var socket: Socket? = null
     private var input: ByteReadChannel? = null
     private var output: ByteWriteChannel? = null
@@ -31,7 +32,7 @@ class RoomViewModel : ViewModel() {
                 Log.i("SOCKET", "Connected to server $host:$port")
 
                 // Nhận thông điệp từ server
-                delay(50)
+//                delay(50)
                 val response = input?.readUTF8Line()
                 message.value = response ?: "No response from server"
             } catch (e: Exception) {
@@ -43,9 +44,9 @@ class RoomViewModel : ViewModel() {
     fun createRoom() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                output?.writeStringUtf8("CREATE_ROOM\n")
+                output?.writeStringUtf8("CREATE_ROOM, PLAYER_ID:${SocketViewModel.playerID}\n")
                 Log.i("SOCKET", "create room:")
-                delay(50)
+//                delay(50)
                 val response = input?.readUTF8Line()
                 Log.i("SOCKET", "create room response: $response")
                 response?.let {
@@ -62,8 +63,8 @@ class RoomViewModel : ViewModel() {
     fun joinRoom(roomCode: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                output?.writeStringUtf8("JOIN_ROOM:$roomCode\n")
-                delay(50)
+                output?.writeStringUtf8("JOIN_ROOM, PLAYER_ID:${SocketViewModel.playerID}, ROOM_ID:$roomCode\n")
+//                delay(50)
                 val response = input?.readUTF8Line()
                 response?.let {
                     if (it.startsWith("JOIN_SUCCESS:")) {

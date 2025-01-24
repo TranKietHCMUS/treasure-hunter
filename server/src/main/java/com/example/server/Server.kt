@@ -14,6 +14,7 @@ fun main() = runBlocking {
 
     // Quản lý danh sách phòng
     val rooms = ConcurrentHashMap<String, Room>()
+    val ID2Player = ConcurrentHashMap<String, Socket>()
 
     while (true) {
         val client = server.accept()
@@ -31,15 +32,25 @@ fun main() = runBlocking {
 
                 when {
                     message.startsWith("CREATE_ROOM") -> {
+                        val playerMessage = message.split(",")[1]
+                        println("   Player message: $playerMessage\n")
+                        val playerId = playerMessage.split(":")[1]
+
                         val roomId = (100000..999999).random().toString()
                         println("   Room id: $roomId")
                         rooms[roomId] = Room(roomId, mutableListOf(client))
                         output.writeStringUtf8("ROOM_CREATED:$roomId\n")
                         println("   Created successfully")
+
+                        ID2Player[playerId] = client
                     }
 
                     message.startsWith("JOIN_ROOM:") -> {
-                        val roomId = message.split(":")[1]
+                        val playerMessage = message.split(",")[1]
+                        val playerId = playerMessage.split(":")[1]
+                        val roomMessage = message.split(",")[2]
+                        val roomId = roomMessage.split(":")[1]
+
                         if (rooms.containsKey(roomId)) {
                             rooms[roomId]?.clients?.add(client)
                             output.writeStringUtf8("JOIN_SUCCESS:$roomId\n")

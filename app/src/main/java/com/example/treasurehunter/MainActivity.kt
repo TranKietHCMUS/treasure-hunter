@@ -38,6 +38,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.app.auth.AuthViewModel
 import com.example.app.auth.LoginScreen
 import com.example.app.auth.RegisterScreen
+import com.example.treasurehunter.data.viewModel.RoomViewModel
+import com.example.treasurehunter.data.viewModel.SocketViewModel
 import com.example.treasurehunter.ui.screen.CreateRoomScreen
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
 import com.example.treasurehunter.ui.component.OpenChest
@@ -45,6 +47,7 @@ import com.example.treasurehunter.ui.screen.ARScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
 import com.example.treasurehunter.ui.screen.InGameScreen
 import com.example.treasurehunter.ui.screen.ProfileScreen
+import com.example.treasurehunter.ui.screen.RoomControlScreen
 import com.example.treasurehunter.ui.screen.RoomScreen
 //import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import com.example.treasurehunter.ui.screen.TestScreen
@@ -85,11 +88,14 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 fun MyApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
+    Log.i("SOCKET", "RoomScreen: LaunchedEffect")
+    SocketViewModel.room.connectToServer("192.168.1.8", 8080)
+
     Box(modifier = modifier.fillMaxSize()) {
         CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = "room",
+                startDestination = "control-room",
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
                 modifier = Modifier
@@ -106,6 +112,9 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("register") { RegisterScreen() { navController.navigate("login") } }
                 composable("profile") { ProfileScreen() }
                 composable("room") { RoomScreen() }
+                composable("control-room") { RoomControlScreen() }
+                composable("create-room") { CreateRoomScreen() }
+
             }
         }
 
