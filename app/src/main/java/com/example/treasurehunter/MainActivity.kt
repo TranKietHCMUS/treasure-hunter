@@ -46,6 +46,7 @@ import com.example.treasurehunter.ui.component.OpenChest
 import com.example.treasurehunter.ui.screen.ARScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
 import com.example.treasurehunter.ui.screen.InGameScreen
+import com.example.treasurehunter.ui.screen.JoinRoomScreen
 import com.example.treasurehunter.ui.screen.ProfileScreen
 import com.example.treasurehunter.ui.screen.RoomControlScreen
 import com.example.treasurehunter.ui.screen.RoomScreen
@@ -114,6 +115,8 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("room") { RoomScreen() }
                 composable("control-room") { RoomControlScreen() }
                 composable("create-room") { CreateRoomScreen() }
+                composable("join-room") { JoinRoomScreen() }
+
 
             }
         }

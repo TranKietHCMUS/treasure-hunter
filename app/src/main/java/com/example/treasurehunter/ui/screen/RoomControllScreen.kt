@@ -49,7 +49,7 @@ fun RoomControlScreen() {
                 contentColor = Color.Black
             ),
             onClick = {
-                navController.navigate("home")
+                navController.navigate("join-room")
             }
         ) {
             Text("Join room")

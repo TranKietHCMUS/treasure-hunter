@@ -25,11 +25,6 @@ fun CreateRoomScreen() {
     val roomId by viewModel.roomId
     val members by viewModel.members
 
-    fun createRoom() {
-        viewModel.createRoom()
-        viewModel.fetchMembers(roomId)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,7 +48,7 @@ fun CreateRoomScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Tạo phòng
-            Button(onClick = { createRoom() }) {
+            Button(onClick = { viewModel.createRoom() }) {
                 Text("Create Room")
             }
             Text(text = "Room ID: $roomId")

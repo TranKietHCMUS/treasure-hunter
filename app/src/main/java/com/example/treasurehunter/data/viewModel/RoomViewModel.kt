@@ -82,11 +82,15 @@ class RoomViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 output?.writeStringUtf8("JOIN_ROOM, PLAYER_ID:${SocketViewModel.playerID}, ROOM_ID:$roomCode\n")
+                Log.i("SOCKET", "join room:")
                 delay(50)
                 val response = input?.readUTF8Line()
+                Log.i("SOCKET", "join room response: $response")
                 response?.let {
                     if (it.startsWith("JOIN_SUCCESS:")) {
                         joinedRoom.value = it.split(":")[1]
+                    } else if (it.startsWith("MEMBERS:")) {
+                        members.value = it.split(":")[1]
                     } else {
                         message.value = "Room not found!"
                     }
@@ -95,6 +99,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                 Log.e("SOCKET", "joinRoom: ${e.message}")
             }
         }
+
     }
 
     override fun onCleared() {

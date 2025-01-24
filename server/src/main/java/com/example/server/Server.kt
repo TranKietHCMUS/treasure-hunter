@@ -24,8 +24,6 @@ fun main() = runBlocking {
             val input = client.openReadChannel()
             val output = client.openWriteChannel(autoFlush = true)
 
-            output.writeStringUtf8("Welcome to the server!\n")
-
             while (true) {
                 val message = input.readUTF8Line() ?: break
                 println("Message received: $message")
@@ -39,25 +37,30 @@ fun main() = runBlocking {
                         val roomId = (100000..999999).random().toString()
                         println("   Room id: $roomId")
                         rooms[roomId] = Room(roomId, mutableListOf(client))
+
                         output.writeStringUtf8("ROOM_CREATED:$roomId\n")
+
                         println("   Created successfully")
 
                         ID2Player[playerId] = client
                     }
 
-                    message.startsWith("JOIN_ROOM:") -> {
+                    message.startsWith("JOIN_ROOM") -> {
                         val playerMessage = message.split(",")[1]
                         val playerId = playerMessage.split(":")[1]
                         val roomMessage = message.split(",")[2]
                         val roomId = roomMessage.split(":")[1]
 
+
+                        println("   playerId: $playerId")
+                        println("   roomId: $roomId")
+                        println("   existing rooms: ${rooms.containsKey(roomId)}")
                         if (rooms.containsKey(roomId)) {
-                            rooms[roomId]?.clients?.add(client)
+                            val room = rooms[roomId]
+                            room?.clients?.add(client)
+
                             output.writeStringUtf8("JOIN_SUCCESS:$roomId\n")
-                            rooms[roomId]?.clients?.forEach {
-                                it.openWriteChannel(autoFlush = true)
-                                    .writeStringUtf8("PLAYER_JOINED\n")
-                            }
+                            println("   Player $playerId joined room $roomId")
 
                             ID2Player[playerId] = client
                         } else {
@@ -87,6 +90,7 @@ fun main() = runBlocking {
             }
 
             println("Client disconnected: ${client.remoteAddress}")
+
         }
     }
 }
