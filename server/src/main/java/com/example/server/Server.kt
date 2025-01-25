@@ -6,6 +6,7 @@ import io.ktor.utils.io.*
 import kotlinx.coroutines.*
 import java.util.concurrent.ConcurrentHashMap
 
+data class Cico(val input : ByteReadChannel, val output : ByteWriteChannel)
 data class Room(val id: String, val clients: MutableList<Socket>)
 
 fun main() = runBlocking {
@@ -15,17 +16,18 @@ fun main() = runBlocking {
     // Quản lý danh sách phòng
     val rooms = ConcurrentHashMap<String, Room>()
     val ID2Player = ConcurrentHashMap<String, Socket>()
+    val socket2cico = ConcurrentHashMap<Socket, Cico>()
 
     while (true) {
         val client = server.accept()
         println("Client connected: ${client.remoteAddress}")
 
         launch {
-            val input = client.openReadChannel()
-            val output = client.openWriteChannel(autoFlush = true)
+            val cico = Cico(client.openReadChannel(), client.openWriteChannel(autoFlush = true))
+            socket2cico[client] = cico
 
             while (true) {
-                val message = input.readUTF8Line() ?: break
+                val message = cico.input.readUTF8Line() ?: break
                 println("Message received: $message")
 
                 when {
@@ -38,7 +40,7 @@ fun main() = runBlocking {
                         println("   Room id: $roomId")
                         rooms[roomId] = Room(roomId, mutableListOf(client))
 
-                        output.writeStringUtf8("ROOM_CREATED:$roomId\n")
+                        cico.output.writeStringUtf8("ROOM_CREATED:$roomId\n")
 
                         println("   Created successfully")
 
@@ -59,12 +61,12 @@ fun main() = runBlocking {
                             val room = rooms[roomId]
                             room?.clients?.add(client)
 
-                            output.writeStringUtf8("JOIN_SUCCESS:$roomId\n")
+                            cico.output.writeStringUtf8("JOIN_SUCCESS:$roomId\n")
                             println("   Player $playerId joined room $roomId")
 
                             ID2Player[playerId] = client
                         } else {
-                            output.writeStringUtf8("ERROR:ROOM_NOT_FOUND\n")
+                            cico.output.writeStringUtf8("ERROR:ROOM_NOT_FOUND\n")
                         }
                     }
 
@@ -79,11 +81,30 @@ fun main() = runBlocking {
                                 memberMessage += it.remoteAddress.toString() + ","
                             }
                             println("   Members: $memberMessage")
+//                            room?.clients?.forEach {
+//                                it.openWriteChannel(autoFlush = true).writeStringUtf8(memberMessage)
+//                            }
+                        } else {
+                            cico.output.writeStringUtf8("ERROR:ROOM_NOT_FOUND\n")
+                        }
+                    }
+
+                    message.startsWith("START_GAME") -> {
+                        val roomMessage = message.split(",")[1]
+                        val roomId = roomMessage.split(":")[1]
+                        val room = rooms[roomId]
+
+                        if (rooms.containsKey(roomId)) {
                             room?.clients?.forEach {
-                                it.openWriteChannel(autoFlush = true).writeStringUtf8(memberMessage)
+                                if (it != client) {
+                                    val clientCico = socket2cico[it]
+                                    println("   Sending GAME_STARTED to ${it.remoteAddress}")
+                                    println("   Client cico: $clientCico")
+                                    clientCico?.output?.writeStringUtf8("GAME_STARTED\n")
+                                }
                             }
                         } else {
-                            output.writeStringUtf8("ERROR:ROOM_NOT_FOUND\n")
+                            cico.output.writeStringUtf8("ERROR:ROOM_NOT_FOUND\n")
                         }
                     }
                 }

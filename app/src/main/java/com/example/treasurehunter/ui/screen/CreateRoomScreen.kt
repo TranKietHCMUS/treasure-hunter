@@ -2,6 +2,7 @@ package com.example.treasurehunter.ui.screen
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
@@ -14,12 +15,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.treasurehunter.data.viewModel.SocketViewModel
 import kotlinx.coroutines.delay
 
 @Preview
 @Composable
 fun CreateRoomScreen() {
+    val navController = LocalNavController.current
     val viewModel = SocketViewModel.room
 
     val roomId by viewModel.roomId
@@ -51,10 +54,25 @@ fun CreateRoomScreen() {
             Button(onClick = { viewModel.createRoom() }) {
                 Text("Create Room")
             }
-            Text(text = "Room ID: $roomId")
-            Text(text = "Members: $members")
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            if (roomId != "") {
+                Text( modifier = Modifier
+                    .padding(16.dp)
+                    .background(Color.White),
+                    fontSize = 20.sp,
+                    text = "Room ID: $roomId")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = {
+                    viewModel.startGame(roomId);
+                    navController.navigate("setting-room")
+                } ) {
+                    Text("Start Game")
+                }
+            }
         }
     }
 }

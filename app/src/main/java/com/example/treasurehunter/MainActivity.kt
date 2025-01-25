@@ -50,6 +50,7 @@ import com.example.treasurehunter.ui.screen.JoinRoomScreen
 import com.example.treasurehunter.ui.screen.ProfileScreen
 import com.example.treasurehunter.ui.screen.RoomControlScreen
 import com.example.treasurehunter.ui.screen.RoomScreen
+import com.example.treasurehunter.ui.screen.SettingRoomScreen
 //import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import com.example.treasurehunter.ui.screen.TestScreen
 import com.example.treasurehunter.ui.theme.TreasureHunterTheme
@@ -107,7 +108,7 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("map") { MapScreen() }
                 composable("test") { TestScreen() }
                 composable("ar") { ARScreen() }
-                composable("create-room") { CreateRoomScreen() }
+                composable("setting-room") { SettingRoomScreen() }
                 composable("in-game") { InGameScreen() }
                 composable("login") { LoginScreen() { navController.navigate("home") } }
                 composable("register") { RegisterScreen() { navController.navigate("login") } }

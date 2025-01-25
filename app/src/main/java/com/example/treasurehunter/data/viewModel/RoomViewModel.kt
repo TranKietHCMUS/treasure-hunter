@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.treasurehunter.LocalNavController
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
@@ -59,6 +60,38 @@ class RoomViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun startGame(roomCode: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                output?.writeStringUtf8("START_GAME, ROOM_ID:$roomCode\n")
+            } catch (e: Exception) {
+                Log.e("SOCKET", "startGame: ${e.message}")
+            }
+        }
+    }
+
+    fun waitingGame() {
+        viewModelScope.launch(Dispatchers.IO) {
+            while (true) {
+                try {
+                    delay(50)
+                    val response = input?.readUTF8Line()
+                    response?.let {
+                        if (it.startsWith("GAME_STARTED")) {
+                            message.value = "Game started!"
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("SOCKET", "waitingGame: ${e.message}")
+                }
+            }
+
+            if (message.value == "Game started!") {
+
+            }
+        }
+    }
+
     fun createRoom() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -88,7 +121,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                 Log.i("SOCKET", "join room response: $response")
                 response?.let {
                     if (it.startsWith("JOIN_SUCCESS:")) {
-                        joinedRoom.value = it.split(":")[1]
+                        joinedRoom.value = it
                     } else if (it.startsWith("MEMBERS:")) {
                         members.value = it.split(":")[1]
                     } else {
@@ -97,6 +130,10 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                 }
             } catch (e: Exception) {
                 Log.e("SOCKET", "joinRoom: ${e.message}")
+            }
+
+            if (joinedRoom.value.startsWith("JOIN_SUCCESS:")) {
+                waitingGame()
             }
         }
 

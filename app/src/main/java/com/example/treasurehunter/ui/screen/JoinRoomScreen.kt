@@ -19,22 +19,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.test.core.app.ActivityScenario.launch
+import com.example.treasurehunter.LocalNavController
 import com.example.treasurehunter.data.viewModel.RoomViewModel
 import com.example.treasurehunter.data.viewModel.SocketViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 
 @Composable
 fun JoinRoomScreen() {
+    val navController = LocalNavController.current
     val viewModel = SocketViewModel.room
 
-    val roomId by viewModel.roomId
-    val members by viewModel.members
     val joinedRoom by viewModel.joinedRoom
     val message by viewModel.message
 
     LaunchedEffect(Unit) {
         Log.i("SOCKET", "RoomScreen: LaunchedEffect")
         viewModel.connectToServer("192.168.1.8", 8080)
+    }
+
+    LaunchedEffect(message) {
+        Log.i("SOCKET", "RoomScreen: LaunchedEffect, message: $message")
+        if (message.startsWith("Game started!")) {
+            navController.navigate("setting-room")
+        }
     }
 
     Column(
@@ -51,12 +65,14 @@ fun JoinRoomScreen() {
             onValueChange = { inputRoomCode = it },
             label = { Text("Enter Room Code") }
         )
-        Button(onClick = { viewModel.joinRoom(inputRoomCode) }) {
+        Button(onClick = {
+            viewModel.joinRoom(inputRoomCode);
+        }) {
             Text("Join Room")
         }
-        Text(text = "Room ID: $roomId")
-        Text(text = "Joined Room: $joinedRoom")
-        Text(text = "Message: $message")
-        Text(text = "members: $members")
+        if (joinedRoom != "") {
+            val roomId = joinedRoom.split(":")[1]
+            Text(text = "Joined room: $roomId successfully")
+        }
     }
 }
