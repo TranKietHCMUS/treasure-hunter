@@ -209,7 +209,6 @@ fun CreateButton(
     Button(
         onClick = {
             if (!isLoading) onClick()
-            PuzzleViewModel.init()
         },
         enabled = enabled && !isLoading,
         colors = ButtonDefaults.buttonColors(

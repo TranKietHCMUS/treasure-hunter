@@ -70,6 +70,12 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
 
             ScoreViewModel.maxScore = AuthViewModel.currentUser.value?.highestScore ?: 0
             ScoreViewModel.score = 0
+
+            SocketViewModel.room.roomId.value = ""
+            SocketViewModel.room.message.value = ""
+            SocketViewModel.room.joinedRoom.value = ""
+            SocketViewModel.room.members.value = ""
+
             GameViewModel.changeScreenMode(ScreenMode.MAP)
         }
 

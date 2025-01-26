@@ -28,6 +28,7 @@ import com.example.treasurehunter.LocalNavController
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.treasurehunter.data.viewModel.PuzzleViewModel
 
 @Preview
 @Composable
@@ -76,6 +77,7 @@ fun HomeScreen() {
             Button(
                 onClick = {
 //                     Điều hướng đến màn hình CreateRoom
+                    PuzzleViewModel.init()
                     navController.navigate("control-room")
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),

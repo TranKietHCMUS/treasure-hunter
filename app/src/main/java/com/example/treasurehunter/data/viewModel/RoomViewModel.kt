@@ -126,12 +126,16 @@ class RoomViewModel @Inject constructor() : ViewModel() {
             try {
                 output?.writeStringUtf8("CREATE_ROOM, PLAYER_ID:${SocketViewModel.playerID}\n")
                 Log.i("SOCKET", "create room:")
-                delay(50)
-                val response = input?.readUTF8Line()
-                Log.i("SOCKET", "create room response: $response")
-                response?.let {
-                    if (it.startsWith("ROOM_CREATED:")) {
-                        roomId.value = it.split(":")[1]
+
+                var running = true
+                while (running) {
+                    val response = input?.readUTF8Line()
+                    Log.i("SOCKET", "create room response: $response")
+                    response?.let {
+                        if (it.startsWith("ROOM_CREATED:")) {
+                            running = false
+                            roomId.value = it.split(":")[1]
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -145,25 +149,25 @@ class RoomViewModel @Inject constructor() : ViewModel() {
             try {
                 output?.writeStringUtf8("JOIN_ROOM, PLAYER_ID:${SocketViewModel.playerID}, ROOM_ID:$roomCode\n")
                 Log.i("SOCKET", "join room:")
-                delay(50)
-                val response = input?.readUTF8Line()
-                Log.i("SOCKET", "join room response: $response")
-                response?.let {
-                    if (it.startsWith("JOIN_SUCCESS:")) {
-                        joinedRoom.value = it
-                    } else if (it.startsWith("MEMBERS:")) {
-                        members.value = it.split(":")[1]
-                    } else {
-                        message.value = "Room not found!"
+
+                var running = true
+                while (running) {
+                    val response = input?.readUTF8Line()
+                    Log.i("SOCKET", "join room response: $response")
+                    response?.let {
+                        if (it.startsWith("JOIN_SUCCESS:")) {
+                            joinedRoom.value = it
+                            SocketViewModel.room.roomId.value = it.split(':')[1]
+                            running = false
+                        } else if (it.startsWith("MEMBERS:")) {
+                            members.value = it.split(":")[1]
+                        } else {
+                            message.value = "Room not found!"
+                        }
                     }
                 }
             } catch (e: Exception) {
                 Log.e("SOCKET", "joinRoom: ${e.message}")
-            }
-
-            if (joinedRoom.value.startsWith("JOIN_SUCCESS:")) {
-                SocketViewModel.room.roomId.value = joinedRoom.value.split(':')[1]
-                waitingGame()
             }
         }
 

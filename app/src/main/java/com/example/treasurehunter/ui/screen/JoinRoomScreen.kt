@@ -48,6 +48,12 @@ fun JoinRoomScreen() {
         }
     }
 
+    LaunchedEffect(joinedRoom) {
+        if (joinedRoom.startsWith("JOIN_SUCCESS")) {
+            viewModel.waitingGame()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -76,6 +82,7 @@ fun JoinRoomScreen() {
         }
         if (joinedRoom != "") {
             val roomId = joinedRoom.split(":")[1]
+            SocketViewModel.room.roomId.value = roomId
             Text(text = "Joined room: $roomId successfully")
         }
     }
