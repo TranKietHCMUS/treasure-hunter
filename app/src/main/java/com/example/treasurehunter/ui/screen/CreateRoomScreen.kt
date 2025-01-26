@@ -28,6 +28,7 @@ fun CreateRoomScreen() {
     val roomId by viewModel.roomId
     val members by viewModel.members
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,40 +40,28 @@ fun CreateRoomScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(Color(0xFFF5881F), Color(0xFFFFA726), Color.White)
-                    )
-                ),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            // Tạo phòng
-            Button(onClick = { viewModel.createRoom() }) {
-                Text("Create Room")
-            }
+        // Tạo phòng
+        Button(onClick = { viewModel.createRoom() }) {
+            Text("Create Room")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (roomId != "") {
+            Text( modifier = Modifier
+                .padding(16.dp)
+                .background(Color.White),
+                fontSize = 20.sp,
+                text = "Room ID: $roomId")
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (roomId != "") {
-                Text( modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color.White),
-                    fontSize = 20.sp,
-                    text = "Room ID: $roomId")
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(onClick = {
-                    viewModel.startGame(roomId)
-                    viewModel.inGame()
-                    navController.navigate("setting-room")
-                } ) {
-                    Text("Start Game")
-                }
+            Button(onClick = {
+                viewModel.startGame(roomId)
+                viewModel.inGame()
+                navController.navigate("setting-room")
+            } ) {
+                Text("Start Game")
             }
         }
     }

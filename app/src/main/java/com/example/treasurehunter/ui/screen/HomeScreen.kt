@@ -76,7 +76,7 @@ fun HomeScreen() {
             Button(
                 onClick = {
 //                     Điều hướng đến màn hình CreateRoom
-                    navController.navigate("create-room")
+                    navController.navigate("control-room")
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 shape = RoundedCornerShape(30.dp),

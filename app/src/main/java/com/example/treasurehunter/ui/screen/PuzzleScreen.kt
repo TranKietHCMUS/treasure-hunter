@@ -116,7 +116,7 @@ fun SolvedComponent() {
         )
 
         Button(onClick = {
-            navController.navigate("create-room")
+            navController.navigate("home")
         }) {
             Text("New game")
         }
