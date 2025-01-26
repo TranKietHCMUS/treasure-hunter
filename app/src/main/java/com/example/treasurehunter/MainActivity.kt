@@ -2,7 +2,6 @@ package com.example.treasurehunter
 
 import MapScreen
 import android.app.Application
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -16,29 +15,16 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.material3.Text
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.app.auth.AuthViewModel
 import com.example.app.auth.LoginScreen
 import com.example.app.auth.RegisterScreen
-import com.example.treasurehunter.data.viewModel.RoomViewModel
 import com.example.treasurehunter.data.viewModel.SocketViewModel
 import com.example.treasurehunter.ui.screen.CreateRoomScreen
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
@@ -57,7 +43,6 @@ import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
-import kotlin.math.log
 
 @HiltAndroidApp
 class MyApplication : Application() {
@@ -91,7 +76,7 @@ fun MyApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
     Log.i("SOCKET", "RoomScreen: LaunchedEffect")
-    SocketViewModel.room.connectToServer("192.168.1.8", 8080)
+    SocketViewModel.room.connectToServer(BuildConfig.IP, BuildConfig.PORT)
 
     Box(modifier = modifier.fillMaxSize()) {
         CompositionLocalProvider(LocalNavController provides navController) {

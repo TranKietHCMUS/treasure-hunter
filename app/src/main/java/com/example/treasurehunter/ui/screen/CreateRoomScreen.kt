@@ -67,7 +67,8 @@ fun CreateRoomScreen() {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(onClick = {
-                    viewModel.startGame(roomId);
+                    viewModel.startGame(roomId)
+                    viewModel.inGame()
                     navController.navigate("setting-room")
                 } ) {
                     Text("Start Game")

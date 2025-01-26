@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.treasurehunter.LocalNavController
+import com.example.treasurehunter.data.model.ScreenMode
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
@@ -23,11 +23,11 @@ class RoomViewModel @Inject constructor() : ViewModel() {
     val joinedRoom = mutableStateOf("")
     val members = mutableStateOf("")
 
-    fun connectToServer(host: String, port: Int) {
+    fun connectToServer(host: String, port: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 Log.i("SOCKET", "connect to server: $host:$port")
-                socket = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().connect(host, port)
+                socket = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().connect(host, port.toInt())
                 input = socket?.openReadChannel()
                 output = socket?.openWriteChannel(autoFlush = true)
 
@@ -70,24 +70,53 @@ class RoomViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun waitingGame() {
+    fun endGame(roomCode: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            while (true) {
+            try {
+                output?.writeStringUtf8("END_GAME, ROOM_ID:$roomCode\n")
+            } catch (e: Exception) {
+                Log.e("SOCKET", "endGame: ${e.message}")
+            }
+        }
+    }
+
+    fun inGame() {
+        viewModelScope.launch(Dispatchers.IO) {
+            var running = true
+            while (running) {
                 try {
                     delay(50)
                     val response = input?.readUTF8Line()
                     response?.let {
-                        if (it.startsWith("GAME_STARTED")) {
-                            message.value = "Game started!"
+                        if (it.startsWith("END_GAME")) {
+                            PuzzleViewModel.isSolved = true
+                            GameViewModel.screenMode = ScreenMode.PUZZLE
+                            running = false
                         }
                     }
                 } catch (e: Exception) {
                     Log.e("SOCKET", "waitingGame: ${e.message}")
                 }
             }
+        }
+    }
 
-            if (message.value == "Game started!") {
-
+    fun waitingGame() {
+        viewModelScope.launch(Dispatchers.IO) {
+            var running = true
+            while (running) {
+                try {
+                    delay(50)
+                    val response = input?.readUTF8Line()
+                    response?.let {
+                        if (it.startsWith("GAME_STARTED")) {
+                            message.value = "Game started!"
+                            running = false
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("SOCKET", "waitingGame: ${e.message}")
+                }
             }
         }
     }
@@ -133,6 +162,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
             }
 
             if (joinedRoom.value.startsWith("JOIN_SUCCESS:")) {
+                SocketViewModel.room.roomId.value = joinedRoom.value.split(':')[1]
                 waitingGame()
             }
         }

@@ -33,14 +33,22 @@ android {
 
         // Thêm API key vào BuildConfig
         buildConfigField "String", "MAPS_API_KEY", "\"${localProperties.getProperty('MAPS_API_KEY')}\""
+        buildConfigField "String", "IP", "\"${localProperties.getProperty('IP')}\""
+        buildConfigField "String", "PORT", "\"${localProperties.getProperty('PORT')}\""
     }
 
     buildTypes {
         debug {
-            manifestPlaceholders = [MAPS_API_KEY: localProperties.getProperty('MAPS_API_KEY', '')]
+            manifestPlaceholders = [MAPS_API_KEY: localProperties.getProperty('MAPS_API_KEY', ''),
+                                    IP: localProperties.getProperty('IP', ''),
+                                    PORT: localProperties.getProperty('PORT', ''),
+            ]
         }
         release {
-            manifestPlaceholders = [MAPS_API_KEY: localProperties.getProperty('MAPS_API_KEY', '')]
+            manifestPlaceholders = [MAPS_API_KEY: localProperties.getProperty('MAPS_API_KEY', ''),
+                                    IP: localProperties.getProperty('IP', ''),
+                                    PORT: localProperties.getProperty('PORT', ''),
+            ]
         }
     }
 

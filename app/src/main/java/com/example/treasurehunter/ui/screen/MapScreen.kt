@@ -39,7 +39,6 @@ fun MapScreen(
     val cameraPositionState = rememberCameraPositionState()
 
     val context = LocalContext.current
-    val gameViewModel: GameViewModel = viewModel()
 
     // Khởi tạo GameViewModel
     LaunchedEffect(context) {

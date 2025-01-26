@@ -10,7 +10,7 @@ data class Cico(val input : ByteReadChannel, val output : ByteWriteChannel)
 data class Room(val id: String, val clients: MutableList<Socket>)
 
 fun main() = runBlocking {
-    val server = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("192.168.1.8", 8080)
+    val server = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("192.168.1.7", 8080)
     println("Server is running at ${server.localAddress}")
 
     // Quản lý danh sách phòng
@@ -40,6 +40,9 @@ fun main() = runBlocking {
                         println("   Room id: $roomId")
                         rooms[roomId] = Room(roomId, mutableListOf(client))
 
+                        val room = rooms[roomId]
+                        room?.clients?.add(client)
+
                         cico.output.writeStringUtf8("ROOM_CREATED:$roomId\n")
 
                         println("   Created successfully")
@@ -59,7 +62,10 @@ fun main() = runBlocking {
                         println("   existing rooms: ${rooms.containsKey(roomId)}")
                         if (rooms.containsKey(roomId)) {
                             val room = rooms[roomId]
-                            room?.clients?.add(client)
+                            if (room?.clients?.contains(client) == false) {
+                                room.clients.add(client)
+                            }
+
 
                             cico.output.writeStringUtf8("JOIN_SUCCESS:$roomId\n")
                             println("   Player $playerId joined room $roomId")
@@ -101,6 +107,25 @@ fun main() = runBlocking {
                                     println("   Sending GAME_STARTED to ${it.remoteAddress}")
                                     println("   Client cico: $clientCico")
                                     clientCico?.output?.writeStringUtf8("GAME_STARTED\n")
+                                }
+                            }
+                        } else {
+                            cico.output.writeStringUtf8("ERROR:ROOM_NOT_FOUND\n")
+                        }
+                    }
+
+                    message.startsWith("END_GAME") -> {
+                        val roomMessage = message.split(",")[1]
+                        val roomId = roomMessage.split(":")[1]
+                        val room = rooms[roomId]
+
+                        if (rooms.containsKey(roomId)) {
+                            room?.clients?.forEach {
+                                if (it != client) {
+                                    val clientCico = socket2cico[it]
+                                    println("   Sending END_GAME to ${it.remoteAddress}")
+                                    println("   Client cico: $clientCico")
+                                    clientCico?.output?.writeStringUtf8("END_GAME\n")
                                 }
                             }
                         } else {

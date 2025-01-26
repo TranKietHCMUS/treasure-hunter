@@ -77,6 +77,8 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
             if (userInput == correctAnswer) {
                 isSolved = true
                 ScoreViewModel.score += (9 - ScoreViewModel.score) * (remainSubmition + 1)
+                val roomId by SocketViewModel.room.roomId
+                SocketViewModel.room.endGame(roomId)
             } else {
                 remainSubmition--
                 userInput = ""
