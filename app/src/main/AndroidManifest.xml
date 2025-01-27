@@ -70,6 +70,10 @@
         <meta-data
             android:name="com.google.ar.core"
             android:value="optional" />
+        <provider
+            android:authorities="com.facebook.app.FacebookContentProvider{968068154692713}"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true"/>
     </application>
 
 </manifest>
