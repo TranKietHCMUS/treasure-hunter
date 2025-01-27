@@ -56,6 +56,14 @@
             android:screenOrientation="locked">
         </activity>
 
+        <activity
+            android:name="com.example.treasurehunter.FB.FBActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:screenOrientation="locked">
+        </activity>
+
 <!--        <activity-->
 <!--            android:name="com.example.treasurehunter.geospatial.GeospatialActivity"-->
 <!--            android:configChanges="orientation|screenSize"-->
@@ -74,6 +82,9 @@
             android:authorities="com.facebook.app.FacebookContentProvider{968068154692713}"
             android:name="com.facebook.FacebookContentProvider"
             android:exported="true"/>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="968068154692713" />
     </application>
 
 </manifest>

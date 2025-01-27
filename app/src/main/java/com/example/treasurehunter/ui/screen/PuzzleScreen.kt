@@ -1,5 +1,6 @@
 package com.example.treasurehunter.ui.screen
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import com.example.treasurehunter.ui.theme.Orange
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -37,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.example.treasurehunter.LocalNavController
 import com.example.treasurehunter.data.viewModel.GameViewModel
 import com.example.treasurehunter.data.viewModel.ScoreViewModel
+import com.example.treasurehunter.ui.component.FBShareButton
 
 @Composable
 fun InputComponent() {
@@ -115,10 +119,20 @@ fun SolvedComponent() {
             fontSize = 12.sp
         )
 
-        Button(onClick = {
-            navController.navigate("home")
-        }) {
-            Text("New game")
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(onClick = {
+                navController.navigate("home")
+            }) {
+                Text("New game")
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+//            val context = LocalContext.current as Activity
+            FBShareButton()
         }
     }
 }
@@ -224,10 +238,11 @@ fun PuzzleScreen() {
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        if (PuzzleViewModel.isSolved) {
-            SolvedComponent()
-        } else {
-            InputComponent()
-        }
+        SolvedComponent()
+//        if (PuzzleViewModel.isSolved) {
+//            SolvedComponent()
+//        } else {
+//            InputComponent()
+//        }
     }
 }

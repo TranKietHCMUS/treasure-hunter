@@ -34,12 +34,14 @@ import com.example.treasurehunter.ui.screen.HomeScreen
 import com.example.treasurehunter.ui.screen.InGameScreen
 import com.example.treasurehunter.ui.screen.JoinRoomScreen
 import com.example.treasurehunter.ui.screen.ProfileScreen
+import com.example.treasurehunter.ui.screen.PuzzleScreen
 import com.example.treasurehunter.ui.screen.RoomControlScreen
 import com.example.treasurehunter.ui.screen.RoomScreen
 import com.example.treasurehunter.ui.screen.SettingRoomScreen
 //import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import com.example.treasurehunter.ui.screen.TestScreen
 import com.example.treasurehunter.ui.theme.TreasureHunterTheme
+import com.facebook.FacebookSdk
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
@@ -58,6 +60,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        FacebookSdk.sdkInitialize(applicationContext)
 
         setContent {
             TreasureHunterTheme {
@@ -82,7 +86,7 @@ fun MyApp(modifier: Modifier = Modifier) {
         CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "puzzle",
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
                 modifier = Modifier
@@ -93,6 +97,7 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("map") { MapScreen() }
                 composable("test") { TestScreen() }
                 composable("ar") { ARScreen() }
+                composable("puzzle") { PuzzleScreen() }
                 composable("setting-room") { SettingRoomScreen() }
                 composable("in-game") { InGameScreen() }
                 composable("login") { LoginScreen() { navController.navigate("home") } }
