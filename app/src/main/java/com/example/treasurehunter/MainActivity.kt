@@ -40,6 +40,7 @@ import com.example.treasurehunter.ui.screen.SettingRoomScreen
 //import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import com.example.treasurehunter.ui.screen.TestScreen
 import com.example.treasurehunter.ui.theme.TreasureHunterTheme
+import com.facebook.FacebookSdk
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
@@ -49,6 +50,7 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
+        FacebookSdk.sdkInitialize(applicationContext)
         // Application-level initialization can go here
     }
 }
@@ -82,7 +84,7 @@ fun MyApp(modifier: Modifier = Modifier) {
         CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "login",
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
                 modifier = Modifier

@@ -35,7 +35,7 @@ fun RoomControlScreen() {
                 contentColor = Color.Black
             ),
             onClick = {
-                navController.navigate("create-room")
+                navController.navigate("setting-room")
             }
         ) {
             Text("Create room")

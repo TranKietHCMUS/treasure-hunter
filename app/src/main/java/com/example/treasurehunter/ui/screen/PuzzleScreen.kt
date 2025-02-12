@@ -30,10 +30,14 @@ import com.example.treasurehunter.ui.theme.Orange
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
+import com.example.app.auth.AuthViewModel
 import com.example.treasurehunter.LocalNavController
 import com.example.treasurehunter.data.viewModel.GameViewModel
 import com.example.treasurehunter.data.viewModel.ScoreViewModel
@@ -88,6 +92,9 @@ fun InputComponent() {
 @Composable
 fun SolvedComponent() {
     val navController = LocalNavController.current
+    val context = LocalContext.current
+    val currentUser by AuthViewModel.currentUser.collectAsState(initial = null)
+
     Column(
         modifier = Modifier.fillMaxWidth().padding(20.dp),
         verticalArrangement = Arrangement.Center,
@@ -110,7 +117,7 @@ fun SolvedComponent() {
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Your max score: ${ScoreViewModel.maxScore}",
+            text = "Your max score: ${currentUser?.highestScore}",
             color = Color.White,
             fontSize = 12.sp
         )
@@ -119,6 +126,14 @@ fun SolvedComponent() {
             navController.navigate("home")
         }) {
             Text("New game")
+        }
+
+        Button(
+            onClick = {
+                ScoreViewModel.shareScore(context)
+            }
+        ) {
+            Text("Share")
         }
     }
 }

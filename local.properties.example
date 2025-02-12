@@ -1,2 +1,4 @@
 ## This is an example file for local.properties
 MAPS_API_KEY=your_api_key_here
+FACEBOOK_APP_ID=
+CLIENT_TOKEN=

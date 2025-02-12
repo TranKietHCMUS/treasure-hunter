@@ -35,6 +35,8 @@ android {
         buildConfigField "String", "MAPS_API_KEY", "\"${localProperties.getProperty('MAPS_API_KEY')}\""
         buildConfigField "String", "IP", "\"${localProperties.getProperty('IP')}\""
         buildConfigField "String", "PORT", "\"${localProperties.getProperty('PORT')}\""
+        buildConfigField "String", "FACEBOOK_APP_ID", "\"${localProperties.getProperty('FACEBOOK_APP_ID')}\""
+        buildConfigField "String", "CLIENT_TOKEN", "\"${localProperties.getProperty('CLIENT_TOKEN')}\""
     }
 
     buildTypes {
@@ -42,12 +44,16 @@ android {
             manifestPlaceholders = [MAPS_API_KEY: localProperties.getProperty('MAPS_API_KEY', ''),
                                     IP: localProperties.getProperty('IP', ''),
                                     PORT: localProperties.getProperty('PORT', ''),
+                                    FACEBOOK_APP_ID: localProperties.getProperty('FACEBOOK_APP_ID', ''),
+                                    CLIENT_TOKEN: localProperties.getProperty('CLIENT_TOKEN', '')
             ]
         }
         release {
             manifestPlaceholders = [MAPS_API_KEY: localProperties.getProperty('MAPS_API_KEY', ''),
                                     IP: localProperties.getProperty('IP', ''),
                                     PORT: localProperties.getProperty('PORT', ''),
+                                    FACEBOOK_APP_ID: localProperties.getProperty('FACEBOOK_APP_ID', ''),
+                                    CLIENT_TOKEN: localProperties.getProperty('CLIENT_TOKEN', '')
             ]
         }
     }
@@ -156,6 +162,18 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
     implementation "io.ktor:ktor-network:2.3.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
+
+    // Facebook Core SDK
+    implementation 'com.facebook.android:facebook-core:15.2.0'
+
+    // Facebook Login SDK
+    implementation 'com.facebook.android:facebook-login:15.2.0'
+
+    // Facebook Share SDK
+    implementation 'com.facebook.android:facebook-share:15.2.0'
+
+    // Facebook Common SDK
+    implementation 'com.facebook.android:facebook-common:15.2.0'
 }
 
 kapt {

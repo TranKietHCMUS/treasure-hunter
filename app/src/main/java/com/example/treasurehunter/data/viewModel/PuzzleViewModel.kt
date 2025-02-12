@@ -46,6 +46,14 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
             }
         }
 
+        fun showAllPieces() {
+            for (i in images.indices) {
+                for (j in images[i].indices) {
+                    images[i][j] = Color.Transparent
+                }
+            }
+        }
+
         // Puzzle result
         var userInput by mutableStateOf("")
         private val resultList = listOf(
@@ -68,7 +76,6 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
             isSolved = false
             remainSubmition = 3
 
-            ScoreViewModel.maxScore = AuthViewModel.currentUser.value?.highestScore ?: 0
             ScoreViewModel.score = 0
 
             SocketViewModel.room.roomId.value = ""
@@ -83,6 +90,7 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
             if (userInput == correctAnswer) {
                 isSolved = true
                 ScoreViewModel.score += (9 - ScoreViewModel.score) * (remainSubmition + 1)
+                showAllPieces()
                 val roomId by SocketViewModel.room.roomId
                 SocketViewModel.room.endGame(roomId)
             } else {
@@ -94,8 +102,7 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
                 }
             }
 
-            ScoreViewModel.maxScore = max(ScoreViewModel.maxScore, ScoreViewModel.score)
-            AuthViewModel.updateHighestScore(ScoreViewModel.maxScore)
+            AuthViewModel.updateHighestScore(ScoreViewModel.score)
         }
     }
 }
