@@ -38,6 +38,7 @@ import com.google.android.gms.tasks.OnTokenCanceledListener
 fun SettingRoomScreen() {
     var selectedRadius by remember { mutableStateOf<Double?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+    var isMultiplayer by remember { mutableStateOf<Boolean?>(null) }
 
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -82,53 +83,64 @@ fun SettingRoomScreen() {
         ) {
             Logo()
             Title(text = "Create Room")
+
+            MultiplayerSelection(isMultiplayer) { isMultiplayer = it }
+
             RadiusSelection(selectedRadius = selectedRadius) { selectedRadius = it }
+
+
             Spacer(modifier = Modifier.height(24.dp))
             CreateButton(
                 isLoading = isLoading,
-                enabled = selectedRadius != null,
+                enabled = selectedRadius != null && isMultiplayer != null,
                 onClick = {
-                    if (hasLocationPermission) {
-                        try {
-                            isLoading = true
-                            fusedLocationClient.getCurrentLocation(
-                                Priority.PRIORITY_HIGH_ACCURACY,
-                                object : CancellationToken() {
-                                    override fun onCanceledRequested(listener: OnTokenCanceledListener) = CancellationTokenSource().token
-                                    override fun isCancellationRequested() = false
-                                }
-                            ).addOnSuccessListener { location: Location? ->
-                                isLoading = false
-                                location?.let {
-                                    val position = LatLng(it.latitude, it.longitude)
-                                    currentLocation = position
 
-                                    // Set game location and radius
-                                    GameViewModel.setGameLocation(currentLocation!!)
-                                    GameViewModel.setGameRadius(selectedRadius!!)
-
-                                    // Generate random locations
-                                    GameViewModel.generateTreasures(currentLocation!!, selectedRadius!!)
-
-                                    // navigate to InGameScreen
-                                    navController.navigate("in-game")
-                                }
-                            }.addOnFailureListener {
-                                isLoading = false
-                                // Có thể thêm xử lý lỗi ở đây
-                            }
-                        } catch (e: SecurityException) {
-                            isLoading = false
-                            hasLocationPermission = false
-                        }
+                    if (isMultiplayer == true) {
+                        navController.navigate("multiplayer-lobby")
                     } else {
-                        launcher.launch(
-                            arrayOf(
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION
+                        if (hasLocationPermission) {
+                            try {
+                                isLoading = true
+                                fusedLocationClient.getCurrentLocation(
+                                    Priority.PRIORITY_HIGH_ACCURACY,
+                                    object : CancellationToken() {
+                                        override fun onCanceledRequested(listener: OnTokenCanceledListener) = CancellationTokenSource().token
+                                        override fun isCancellationRequested() = false
+                                    }
+                                ).addOnSuccessListener { location: Location? ->
+                                    isLoading = false
+                                    location?.let {
+                                        val position = LatLng(it.latitude, it.longitude)
+                                        currentLocation = position
+
+                                        // Set game location and radius
+                                        GameViewModel.setGameLocation(currentLocation!!)
+                                        GameViewModel.setGameRadius(selectedRadius!!)
+
+                                        // Generate random locations
+                                        GameViewModel.generateTreasures(currentLocation!!, selectedRadius!!)
+
+                                        // navigate to InGameScreen
+                                        navController.navigate("in-game")
+                                    }
+                                }.addOnFailureListener {
+                                    isLoading = false
+                                    // Có thể thêm xử lý lỗi ở đây
+                                }
+                            } catch (e: SecurityException) {
+                                isLoading = false
+                                hasLocationPermission = false
+                            }
+                        } else {
+                            launcher.launch(
+                                arrayOf(
+                                    Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION
+                                )
                             )
-                        )
+                        }
                     }
+
 
                 }
             )
@@ -221,10 +233,53 @@ fun CreateButton(
             .height(50.dp)
     ) {
         Text(
-            text = "Create",
+            text = "Next",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White
+        )
+    }
+}
+
+@Composable
+fun MultiplayerSelection(selectedMode: Boolean?, onSelection: (Boolean) -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(bottom = 16.dp)
+    ) {
+        Text(
+            text = "Game Mode",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 26.dp)
+        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ModeButton(text = "Solo", isSelected = selectedMode == false, onClick = { onSelection(false) })
+            ModeButton(text = "Multiplayer", isSelected = selectedMode == true, onClick = { onSelection(true) })
+        }
+    }
+}
+
+@Composable
+fun ModeButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .width(120.dp)
+            .height(50.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(if (isSelected) Color(0xFFFF6D2E) else Color.White)
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = if (isSelected) Color.White else Color.Black
         )
     }
 }
