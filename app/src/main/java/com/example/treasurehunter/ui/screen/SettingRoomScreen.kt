@@ -43,21 +43,10 @@ fun SettingRoomScreen() {
     val navController = LocalNavController.current
     val context = LocalContext.current
     var currentLocation by remember { mutableStateOf<LatLng?>(null) }
-    var hasLocationPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        )
-    }
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        hasLocationPermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-    }
+    val hasLocationPermission = ContextCompat.checkSelfPermission(
+        context, Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
 
     val fusedLocationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
@@ -88,60 +77,46 @@ fun SettingRoomScreen() {
 
             RadiusSelection(selectedRadius = selectedRadius) { selectedRadius = it }
 
-
             Spacer(modifier = Modifier.height(24.dp))
             CreateButton(
                 isLoading = isLoading,
                 enabled = selectedRadius != null && isMultiplayer != null,
                 onClick = {
-
                     if (isMultiplayer == true) {
                         navController.navigate("multiplayer-lobby")
                     } else {
                         if (hasLocationPermission) {
-                            try {
-                                isLoading = true
-                                fusedLocationClient.getCurrentLocation(
-                                    Priority.PRIORITY_HIGH_ACCURACY,
-                                    object : CancellationToken() {
-                                        override fun onCanceledRequested(listener: OnTokenCanceledListener) = CancellationTokenSource().token
-                                        override fun isCancellationRequested() = false
-                                    }
-                                ).addOnSuccessListener { location: Location? ->
-                                    isLoading = false
-                                    location?.let {
-                                        val position = LatLng(it.latitude, it.longitude)
-                                        currentLocation = position
-
-                                        // Set game location and radius
-                                        GameViewModel.setGameLocation(currentLocation!!)
-                                        GameViewModel.setGameRadius(selectedRadius!!)
-
-                                        // Generate random locations
-                                        GameViewModel.generateTreasures(currentLocation!!, selectedRadius!!)
-
-                                        // navigate to InGameScreen
-                                        navController.navigate("in-game")
-                                    }
-                                }.addOnFailureListener {
-                                    isLoading = false
-                                    // Có thể thêm xử lý lỗi ở đây
+                            isLoading = true
+                            fusedLocationClient.getCurrentLocation(
+                                Priority.PRIORITY_HIGH_ACCURACY,
+                                object : CancellationToken() {
+                                    override fun onCanceledRequested(listener: OnTokenCanceledListener) = CancellationTokenSource().token
+                                    override fun isCancellationRequested() = false
                                 }
-                            } catch (e: SecurityException) {
+                            ).addOnSuccessListener { location ->
                                 isLoading = false
-                                hasLocationPermission = false
+                                location?.let {
+                                    val position = LatLng(it.latitude, it.longitude)
+                                    currentLocation = position
+
+                                    // Set game location and radius
+                                    GameViewModel.setGameLocation(currentLocation!!)
+                                    GameViewModel.setGameRadius(selectedRadius!!)
+
+                                    // Generate random locations
+                                    GameViewModel.generateTreasures(currentLocation!!, selectedRadius!!)
+
+                                    // Navigate to InGameScreen
+                                    navController.navigate("in-game")
+                                }
+                            }.addOnFailureListener {
+                                isLoading = false
                             }
                         } else {
-                            launcher.launch(
-                                arrayOf(
-                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION
-                                )
-                            )
+                            // Điều hướng về RoomControlScreen nếu quyền chưa được cấp
+                            navController.navigate("room-control")
                         }
                     }
-
-
                 }
             )
         }
@@ -151,6 +126,7 @@ fun SettingRoomScreen() {
         }
     }
 }
+
 
 @Composable
 fun Title(text: String) {
