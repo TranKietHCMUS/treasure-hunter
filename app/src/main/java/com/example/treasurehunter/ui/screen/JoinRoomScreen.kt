@@ -38,6 +38,7 @@ import com.example.treasurehunter.data.viewModel.GameViewModel
 import com.example.treasurehunter.data.viewModel.PuzzleViewModel
 import com.example.treasurehunter.data.viewModel.SocketViewModel
 import com.example.treasurehunter.ui.component.BackButton
+import com.example.treasurehunter.ui.component.Loading
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
@@ -62,6 +63,8 @@ fun JoinRoomScreen() {
         LocationServices.getFusedLocationProviderClient(context)
     }
 
+    var isLoading by remember { mutableStateOf(false) }
+
     val joinedRoom by viewModel.joinedRoom
     val message by viewModel.message
 
@@ -74,6 +77,7 @@ fun JoinRoomScreen() {
         Log.i("SOCKET", "RoomScreen: LaunchedEffect, message: $message")
         if (message.startsWith("Game started!")) {
             if (hasLocationPermission) {
+                isLoading = true
                 fusedLocationClient.getCurrentLocation(
                     Priority.PRIORITY_HIGH_ACCURACY,
                     object : CancellationToken() {
@@ -90,15 +94,21 @@ fun JoinRoomScreen() {
 
                         // Generate random locations
                         GameViewModel.generateTreasures(currentLocation!!, GameViewModel.gameRadius)
+
+                        while (true) {
+                            if (GameViewModel.gameLocation != null) {
+                                viewModel.inGame()
+                                isLoading = false
+                                navController.navigate("in-game")
+                                break
+                            }
+                        }
                     }
                 }
             } else {
                 // Điều hướng về RoomControlScreen nếu quyền chưa được cấp
                 navController.navigate("room-control")
             }
-
-            viewModel.inGame()
-            navController.navigate("in-game")
         }
     }
 
@@ -135,24 +145,13 @@ fun JoinRoomScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
+            CreateButton(
+                isLoading = isLoading,
+                enabled = true,
                 onClick = { viewModel.joinRoom(inputRoomCode) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFF6D2E),
-                    disabledContainerColor = Color.Gray
-                ),
-                shape = RoundedCornerShape(30.dp),
-                modifier = Modifier
-                    .width(150.dp)
-                    .height(50.dp)
-            ) {
-                Text(
-                    text = "Join Room",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+                myText = "Join Room"
                 )
-            }
+
             if (joinedRoom != "") {
                 val roomId = joinedRoom.split(":")[1]
                 SocketViewModel.room.roomId.value = roomId
@@ -160,6 +159,8 @@ fun JoinRoomScreen() {
             }
 
         }
+        if (isLoading) {
+            Loading()
+        }
     }
-
 }

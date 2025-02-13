@@ -192,7 +192,8 @@ fun RadiusButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
 fun CreateButton(
     isLoading: Boolean,
     enabled: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    myText: String = "Next"
 ) {
     Button(
         onClick = {
@@ -205,11 +206,11 @@ fun CreateButton(
         ),
         shape = RoundedCornerShape(30.dp),
         modifier = Modifier
-            .width(150.dp)
+            .width(200.dp)
             .height(50.dp)
     ) {
         Text(
-            text = "Next",
+            text = myText,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White
