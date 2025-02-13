@@ -88,12 +88,12 @@ class ScoreViewModel @Inject constructor() : ViewModel() {
                     .build()
 
                 val linkContent = ShareLinkContent.Builder()
-                    .setContentUrl(Uri.parse("https://www.youtube.com/watch?v=XS3Y0HN8Uic"))
+                    .setContentUrl(Uri.parse("https://creations.mtdv.me/cvAm2KNYWr"))
                     .setQuote("Tôi vừa đạt được $score điểm trong game Treasure Hunter!")
                     .setShareHashtag(ShareHashtag.Builder().setHashtag("#TreasureHunter").build())
                     .build()
 
-                shareDialog.show(linkContent)
+                shareDialog.show(photoContent)
             }
         }
 
