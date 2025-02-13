@@ -162,19 +162,18 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
     implementation "io.ktor:ktor-network:2.3.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3"
-
     // Facebook Core SDK
-    implementation 'com.facebook.android:facebook-core:15.2.0'
+    implementation 'com.facebook.android:facebook-core:latest.release'
 
     // Facebook Login SDK
-    implementation 'com.facebook.android:facebook-login:15.2.0'
+    implementation 'com.facebook.android:facebook-login:latest.release'
 
     // Facebook Share SDK
-    implementation 'com.facebook.android:facebook-share:15.2.0'
+    implementation 'com.facebook.android:facebook-share:latest.release'
 
     // Facebook Common SDK
-    implementation 'com.facebook.android:facebook-common:15.2.0'
-}
+    implementation 'com.facebook.android:facebook-common:latest.release'
+    }
 
 kapt {
     correctErrorTypes = true

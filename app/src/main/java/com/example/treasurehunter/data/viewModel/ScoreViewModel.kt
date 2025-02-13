@@ -9,7 +9,11 @@ import android.net.Uri
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import com.example.treasurehunter.R
+import com.facebook.share.model.ShareHashtag
 import com.facebook.share.model.ShareLinkContent
+import com.facebook.share.model.ShareMediaContent
+import com.facebook.share.model.SharePhoto
+import com.facebook.share.model.SharePhotoContent
 import com.facebook.share.widget.ShareDialog
 import java.io.File
 import java.io.FileOutputStream
@@ -37,36 +41,62 @@ class ScoreViewModel @Inject constructor() : ViewModel() {
 //            }
 //        }
 
+//        fun shareScore(context: Context) {
+//            try {
+//                val textToShare = "Tôi vừa đạt được $score điểm trong game Treasure Hunter!"
+//
+//                // Lấy bitmap từ drawable
+//                val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logotitle)
+//
+//                // Lưu ảnh vào cache
+//                val file = File(context.cacheDir, "shared_image.png")
+//                FileOutputStream(file).use { out ->
+//                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+//                }
+//
+//                // Lấy URI của ảnh
+//                val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+//
+//                // Intent chia sẻ
+//                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+//                    type = "image/*"
+//                    putExtra(Intent.EXTRA_STREAM, uri)
+//                    putExtra(Intent.EXTRA_TEXT, textToShare)
+//                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//                }
+//
+//                // Mở share dialog
+//                context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ qua"))
+//            } catch (e: Exception) {
+//                // Xử lý lỗi nếu cần
+//                e.printStackTrace()
+//            }
+//        }
+
         fun shareScore(context: Context) {
-            try {
-                val textToShare = "Tôi vừa đạt được $score điểm trong game Treasure Hunter!"
+            val shareDialog = ShareDialog(context as androidx.fragment.app.FragmentActivity)
 
-                // Lấy bitmap từ drawable
-                val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logotitle)
+            if (ShareDialog.canShow(SharePhotoContent::class.java)) {
+                val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.app_avatar)
 
-                // Lưu ảnh vào cache
-                val file = File(context.cacheDir, "shared_image.png")
-                FileOutputStream(file).use { out ->
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                }
+                val photo = SharePhoto.Builder()
+                    .setBitmap(bitmap)
+                    .build()
 
-                // Lấy URI của ảnh
-                val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+                val photoContent = SharePhotoContent.Builder()
+                    .addPhoto(photo)
+                    .build()
 
-                // Intent chia sẻ
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = "image/*"
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    putExtra(Intent.EXTRA_TEXT, textToShare)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
+                val linkContent = ShareLinkContent.Builder()
+                    .setContentUrl(Uri.parse("https://www.youtube.com/watch?v=XS3Y0HN8Uic"))
+                    .setQuote("Tôi vừa đạt được $score điểm trong game Treasure Hunter!")
+                    .setShareHashtag(ShareHashtag.Builder().setHashtag("#TreasureHunter").build())
+                    .build()
 
-                // Mở share dialog
-                context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ qua"))
-            } catch (e: Exception) {
-                // Xử lý lỗi nếu cần
-                e.printStackTrace()
+                shareDialog.show(linkContent)
             }
         }
+
+
     }
 }

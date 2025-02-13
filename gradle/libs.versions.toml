@@ -4,6 +4,10 @@ appcompat = "1.7.0"
 concurrentFutures = "1.2.0"
 core = "1.47.0"
 datastorePreferences = "1.0.0"
+facebookCommon = "15.2.0"
+facebookCore = "18.0.2"
+facebookLogin = "15.2.0"
+facebookShare = "15.2.0"
 gradle = "8.4.2"
 guava = "31.1-android"
 hiltAndroid = "2.51.1"
@@ -36,6 +40,7 @@ firebaseAuthKtx = "23.1.0"
 jetbrainsKotlinJvm = "1.9.0"
 
 [libraries]
+android-facebook-common = { module = "com.facebook.android:facebook-common", version.ref = "facebookCommon" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-concurrent-futures = { module = "androidx.concurrent:concurrent-futures", version.ref = "concurrentFutures" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +50,9 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-navigation-compose-v277 = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 core = { module = "com.google.ar:core", version.ref = "core" }
+facebook-core = { module = "com.facebook.android:facebook-core", version.ref = "facebookCore" }
+facebook-share = { module = "com.facebook.android:facebook-share", version.ref = "facebookShare" }
+facebook-login = { module = "com.facebook.android:facebook-login", version.ref = "facebookLogin" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
