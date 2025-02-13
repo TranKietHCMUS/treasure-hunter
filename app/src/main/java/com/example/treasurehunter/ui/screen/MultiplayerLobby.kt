@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.treasurehunter.data.viewModel.GameViewModel
 import com.example.treasurehunter.data.viewModel.SocketViewModel
 import com.example.treasurehunter.ui.component.BackButton
 
@@ -78,7 +79,7 @@ fun MultiplayerLobby() {
 
                 Button(
                     onClick = {
-                        viewModel.startGame(roomId)
+                        viewModel.startGame(roomId, GameViewModel.gameRadius)
                         viewModel.inGame()
                         navController.navigate("in-game")},
                     colors = ButtonDefaults.buttonColors(

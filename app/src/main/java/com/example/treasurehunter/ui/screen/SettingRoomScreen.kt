@@ -82,7 +82,6 @@ fun SettingRoomScreen() {
                 isLoading = isLoading,
                 enabled = selectedRadius != null && isMultiplayer != null,
                 onClick = {
-
                     if (hasLocationPermission) {
                         isLoading = true
                         fusedLocationClient.getCurrentLocation(

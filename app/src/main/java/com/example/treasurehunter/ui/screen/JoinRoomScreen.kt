@@ -1,5 +1,7 @@
 package com.example.treasurehunter.ui.screen
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,20 +27,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.example.treasurehunter.BuildConfig
 import com.example.treasurehunter.LocalNavController
+import com.example.treasurehunter.data.viewModel.GameViewModel
 import com.example.treasurehunter.data.viewModel.PuzzleViewModel
 import com.example.treasurehunter.data.viewModel.SocketViewModel
 import com.example.treasurehunter.ui.component.BackButton
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
 
 
 @Composable
 fun JoinRoomScreen() {
     val navController = LocalNavController.current
     val viewModel = SocketViewModel.room
+
+    val context = LocalContext.current
+    var currentLocation by remember { mutableStateOf<LatLng?>(null) }
+
+    val hasLocationPermission = ContextCompat.checkSelfPermission(
+        context, Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+
+    val fusedLocationClient = remember {
+        LocationServices.getFusedLocationProviderClient(context)
+    }
 
     val joinedRoom by viewModel.joinedRoom
     val message by viewModel.message
@@ -51,8 +73,32 @@ fun JoinRoomScreen() {
     LaunchedEffect(message) {
         Log.i("SOCKET", "RoomScreen: LaunchedEffect, message: $message")
         if (message.startsWith("Game started!")) {
+            if (hasLocationPermission) {
+                fusedLocationClient.getCurrentLocation(
+                    Priority.PRIORITY_HIGH_ACCURACY,
+                    object : CancellationToken() {
+                        override fun onCanceledRequested(listener: OnTokenCanceledListener) = CancellationTokenSource().token
+                        override fun isCancellationRequested() = false
+                    }
+                ).addOnSuccessListener { location ->
+                    location?.let {
+                        val position = LatLng(it.latitude, it.longitude)
+                        currentLocation = position
+
+                        // Set game location and radius
+                        GameViewModel.setGameLocation(currentLocation!!)
+
+                        // Generate random locations
+                        GameViewModel.generateTreasures(currentLocation!!, GameViewModel.gameRadius)
+                    }
+                }
+            } else {
+                // Điều hướng về RoomControlScreen nếu quyền chưa được cấp
+                navController.navigate("room-control")
+            }
+
             viewModel.inGame()
-            navController.navigate("setting-room")
+            navController.navigate("in-game")
         }
     }
 
