@@ -27,13 +27,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.app.auth.LoginScreen
 import com.example.app.auth.RegisterScreen
 import com.example.treasurehunter.data.viewModel.SocketViewModel
-import com.example.treasurehunter.ui.screen.CreateRoomScreen
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
 import com.example.treasurehunter.ui.component.OpenChest
 import com.example.treasurehunter.ui.screen.ARScreen
 import com.example.treasurehunter.ui.screen.HomeScreen
 import com.example.treasurehunter.ui.screen.InGameScreen
 import com.example.treasurehunter.ui.screen.JoinRoomScreen
+import com.example.treasurehunter.ui.screen.MultiplayerLobby
 import com.example.treasurehunter.ui.screen.ProfileScreen
 import com.example.treasurehunter.ui.screen.RoomControlScreen
 import com.example.treasurehunter.ui.screen.RoomScreen
@@ -103,8 +103,8 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("profile") { ProfileScreen() }
                 composable("room") { RoomScreen() }
                 composable("control-room") { RoomControlScreen() }
-                composable("create-room") { CreateRoomScreen() }
                 composable("join-room") { JoinRoomScreen() }
+                composable("multiplayer-lobby") { MultiplayerLobby() }
 
 
             }
