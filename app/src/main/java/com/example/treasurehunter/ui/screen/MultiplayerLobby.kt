@@ -80,7 +80,7 @@ fun MultiplayerLobby() {
                     onClick = {
                         viewModel.startGame(roomId)
                         viewModel.inGame()
-                        navController.navigate("setting-room")},
+                        navController.navigate("in-game")},
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFFF6D2E),
                         disabledContainerColor = Color.Gray
