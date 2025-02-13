@@ -10,7 +10,7 @@ data class Cico(val input : ByteReadChannel, val output : ByteWriteChannel)
 data class Room(val id: String, val clients: MutableList<Socket>)
 
 fun main() = runBlocking {
-    val server = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("192.168.1.6", 8080)
+    val server = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("192.168.1.17", 8080)
     println("Server is running at ${server.localAddress}")
 
     // Quản lý danh sách phòng
