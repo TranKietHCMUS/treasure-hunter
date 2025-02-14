@@ -15,6 +15,7 @@ fun main() = runBlocking {
 
     // Quản lý danh sách phòng
     val rooms = ConcurrentHashMap<String, Room>()
+    val creator = ConcurrentHashMap<String, Socket>()
     val ID2Player = ConcurrentHashMap<String, Socket>()
     val socket2cico = ConcurrentHashMap<Socket, Cico>()
 
@@ -42,6 +43,7 @@ fun main() = runBlocking {
 
                         val room = rooms[roomId]
                         room?.clients?.add(client)
+                        creator[roomId] = client
 
                         cico.output.writeStringUtf8("ROOM_CREATED:$roomId\n")
 
@@ -66,6 +68,9 @@ fun main() = runBlocking {
                                 room.clients.add(client)
                             }
 
+                            val creatorClient = creator[roomId]
+                            val creatorCico = socket2cico[creatorClient]
+                            creatorCico?.output?.writeStringUtf8("MEMBER_JOINED,${client.remoteAddress}\n")
 
                             cico.output.writeStringUtf8("JOIN_SUCCESS:$roomId\n")
                             println("   Player $playerId joined room $roomId")

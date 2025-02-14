@@ -75,6 +75,7 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
             SocketViewModel.room.message.value = ""
             SocketViewModel.room.joinedRoom.value = ""
             SocketViewModel.room.members.value = ""
+            SocketViewModel.room.start.value = false
 
             GameViewModel.changeScreenMode(ScreenMode.MAP)
         }

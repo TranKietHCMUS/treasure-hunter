@@ -2,7 +2,9 @@ package com.example.treasurehunter.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -11,6 +13,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.example.treasurehunter.LocalNavController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +36,12 @@ fun MultiplayerLobby() {
 
     val roomId by viewModel.roomId
     val members by viewModel.members
+
+    var membersList = members.split(",")
+
+    LaunchedEffect(members) {
+        membersList = members.split(",")
+    }
 
     var isLoading by remember { mutableStateOf(false) }
 
@@ -66,11 +75,13 @@ fun MultiplayerLobby() {
             Spacer(modifier = Modifier.height(16.dp))
 
             if (roomId != "") {
-                Text( modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color.White),
+                Text(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .background(Color.White),
                     fontSize = 20.sp,
-                    text = "Room ID: $roomId")
+                    text = "Room ID: $roomId"
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -80,7 +91,7 @@ fun MultiplayerLobby() {
                     onClick = {
                         isLoading = true
                         viewModel.startGame(roomId, GameViewModel.gameRadius)
-
+                        viewModel.start.value = true
                         while (true) {
                             if (GameViewModel.gameLocation != null) {
                                 viewModel.inGame()
@@ -92,6 +103,27 @@ fun MultiplayerLobby() {
                     },
                     myText = "Start Game"
                 )
+
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    modifier = Modifier
+                        .padding(10.dp),
+                    fontSize = 20.sp,
+                    text = "Members: "
+                )
+
+                LazyColumn { // Hiển thị danh sách thành viên trong phòng
+                    items(membersList.size) { index ->
+                        Text(
+                            modifier = Modifier
+                                .padding(3.dp),
+                            fontSize = 20.sp,
+                            text = membersList[index]
+                        )
+                    }
+                }
             }
         }
 
