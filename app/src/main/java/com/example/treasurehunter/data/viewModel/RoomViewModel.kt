@@ -21,7 +21,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
     val roomId = mutableStateOf("")
     val message = mutableStateOf("")
     val joinedRoom = mutableStateOf("")
-    val members = mutableStateOf("")
+    val members = mutableStateOf("Members: ")
 
     fun connectToServer(host: String, port: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -33,8 +33,6 @@ class RoomViewModel @Inject constructor() : ViewModel() {
 
                 Log.i("SOCKET", "Connected to server $host:$port")
 
-                // Nhận thông điệp từ server
-                delay(50)
                 val response = input?.readUTF8Line()
                 message.value = response ?: "No response from server"
             } catch (e: Exception) {
@@ -47,7 +45,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 output?.writeStringUtf8("FETCH_MEMBERS, ROOM_ID:$roomCode\n")
-                delay(50)
+
                 val response = input?.readUTF8Line()
                 response?.let {
                     if (it.startsWith("MEMBERS:")) {
@@ -85,7 +83,6 @@ class RoomViewModel @Inject constructor() : ViewModel() {
             var running = true
             while (running) {
                 try {
-                    delay(50)
                     val response = input?.readUTF8Line()
                     response?.let {
                         if (it.startsWith("END_GAME")) {
@@ -101,12 +98,31 @@ class RoomViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun waitingMembers() {
+        viewModelScope.launch(Dispatchers.IO) {
+            var running = true
+            while (running) {
+                try {
+                    val response = input?.readUTF8Line()
+                    response?.let {
+                        if (it.startsWith("MEMBER_JOINED:")) {
+                            members.value += "${it.split(":")[1]},"
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("SOCKET", "waitingMembers: ${e.message}")
+                }
+                
+                delay(100)
+            }
+        }
+    }
+
     fun waitingGame() {
         viewModelScope.launch(Dispatchers.IO) {
             var running = true
             while (running) {
                 try {
-                    delay(50)
                     val response = input?.readUTF8Line()
                     response?.let {
                         if (it.startsWith("GAME_STARTED")) {
@@ -128,12 +144,20 @@ class RoomViewModel @Inject constructor() : ViewModel() {
 
     fun createRoom() {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                output?.writeStringUtf8("CREATE_ROOM, PLAYER_ID:${SocketViewModel.playerID}\n")
-                Log.i("SOCKET", "create room:")
+            var running = true
+            while (running) {
+                try {
+                    output?.writeStringUtf8("CREATE_ROOM, PLAYER_ID:${SocketViewModel.playerID}\n")
+                    Log.i("SOCKET", "create room:")
+                    running = false
+                } catch (e: Exception) {
+                    Log.e("SOCKET", "joinRoom: ${e.message}")
+                }
+            }
 
-                var running = true
-                while (running) {
+            running = true
+            while (running) {
+                try {
                     val response = input?.readUTF8Line()
                     Log.i("SOCKET", "create room response: $response")
                     response?.let {
@@ -142,21 +166,32 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                             roomId.value = it.split(":")[1]
                         }
                     }
+
+                } catch (e: Exception) {
+                    Log.e("SOCKET", "createRoom: ${e.message}")
                 }
-            } catch (e: Exception) {
-                Log.e("SOCKET", "createRoom: ${e.message}")
+
+                delay(100)
             }
         }
     }
 
     fun joinRoom(roomCode: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                output?.writeStringUtf8("JOIN_ROOM, PLAYER_ID:${SocketViewModel.playerID}, ROOM_ID:$roomCode\n")
-                Log.i("SOCKET", "join room:")
+            var running = true
+            while (running) {
+                try {
+                    output?.writeStringUtf8("JOIN_ROOM, PLAYER_ID:${SocketViewModel.playerID}, ROOM_ID:$roomCode\n")
+                    Log.i("SOCKET", "join room:")
+                    running = false
+                } catch (e: Exception) {
+                    Log.e("SOCKET", "joinRoom: ${e.message}")
+                }
+            }
 
-                var running = true
-                while (running) {
+            running = true
+            while (running) {
+                try {
                     val response = input?.readUTF8Line()
                     Log.i("SOCKET", "join room response: $response")
                     response?.let {
@@ -170,9 +205,11 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                             message.value = "Room not found!"
                         }
                     }
+                } catch (e: Exception) {
+                    Log.e("SOCKET", "joinRoom: ${e.message}")
                 }
-            } catch (e: Exception) {
-                Log.e("SOCKET", "joinRoom: ${e.message}")
+
+                delay(100)
             }
         }
 

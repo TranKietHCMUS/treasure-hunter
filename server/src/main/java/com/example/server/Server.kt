@@ -10,13 +10,15 @@ data class Cico(val input : ByteReadChannel, val output : ByteWriteChannel)
 data class Room(val id: String, val clients: MutableList<Socket>)
 
 fun main() = runBlocking {
-    val server = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("192.168.1.17", 8080)
+    val server = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("192.168.1.6", 8080)
     println("Server is running at ${server.localAddress}")
 
     // Quản lý danh sách phòng
     val rooms = ConcurrentHashMap<String, Room>()
     val ID2Player = ConcurrentHashMap<String, Socket>()
+    val socket2ID = ConcurrentHashMap<Socket, String>()
     val socket2cico = ConcurrentHashMap<Socket, Cico>()
+    val creator = ConcurrentHashMap<String, Socket>()
 
     while (true) {
         val client = server.accept()
@@ -38,16 +40,17 @@ fun main() = runBlocking {
 
                         val roomId = (100000..999999).random().toString()
                         println("   Room id: $roomId")
-                        rooms[roomId] = Room(roomId, mutableListOf(client))
+                        val room = Room(roomId, mutableListOf(client))
+                        rooms[roomId] = room
 
-                        val room = rooms[roomId]
-                        room?.clients?.add(client)
-
-                        cico.output.writeStringUtf8("ROOM_CREATED:$roomId\n")
-
-                        println("   Created successfully")
+                        room.clients.add(client)
+                        creator[roomId] = client
 
                         ID2Player[playerId] = client
+
+                        delay(100)
+                        cico.output.writeStringUtf8("ROOM_CREATED:$roomId\n")
+                        println("   Created successfully")
                     }
 
                     message.startsWith("JOIN_ROOM") -> {
@@ -62,15 +65,21 @@ fun main() = runBlocking {
                         println("   existing rooms: ${rooms.containsKey(roomId)}")
                         if (rooms.containsKey(roomId)) {
                             val room = rooms[roomId]
+
                             if (room?.clients?.contains(client) == false) {
                                 room.clients.add(client)
                             }
 
+                            ID2Player[playerId] = client
+                            socket2ID[client] = playerId
 
+                            val creatorClient = creator[roomId]
+                            val creatorCico = socket2cico[creatorClient]
+                            creatorCico?.output?.writeStringUtf8("MEMBER_JOINED:${playerId}\n")
+
+                            delay(100)
                             cico.output.writeStringUtf8("JOIN_SUCCESS:$roomId\n")
                             println("   Player $playerId joined room $roomId")
-
-                            ID2Player[playerId] = client
                         } else {
                             cico.output.writeStringUtf8("ERROR:ROOM_NOT_FOUND\n")
                         }
