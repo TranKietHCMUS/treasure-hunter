@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.example.treasurehunter.LocalNavController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,10 @@ fun MultiplayerLobby() {
     val members by viewModel.members
 
     var isLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect (roomId) {
+        viewModel.waitingMembers()
+    }
 
     Box(
         modifier = Modifier
@@ -92,6 +97,16 @@ fun MultiplayerLobby() {
                     },
                     myText = "Start Game"
                 )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (members != "") {
+                Text( modifier = Modifier
+                    .padding(16.dp)
+                    .background(Color.White),
+                    fontSize = 20.sp,
+                    text = "Members: $members")
             }
         }
 

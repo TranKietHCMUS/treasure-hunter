@@ -21,7 +21,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
     val roomId = mutableStateOf("")
     val message = mutableStateOf("")
     val joinedRoom = mutableStateOf("")
-    val members = mutableStateOf("")
+    val members = mutableStateOf("Members: ")
 
     fun connectToServer(host: String, port: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -96,6 +96,25 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                     }
                 } catch (e: Exception) {
                     Log.e("SOCKET", "waitingGame: ${e.message}")
+                }
+            }
+        }
+    }
+
+    fun waitingMembers() {
+        viewModelScope.launch(Dispatchers.IO) {
+            var running = true
+            while (running) {
+                try {
+                    delay(50)
+                    val response = input?.readUTF8Line()
+                    response?.let {
+                        if (it.startsWith("MEMBER_JOINED:")) {
+                            members.value += "${it.split(":")[1]},"
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("SOCKET", "waitingMembers: ${e.message}")
                 }
             }
         }
