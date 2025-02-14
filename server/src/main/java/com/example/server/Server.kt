@@ -46,11 +46,11 @@ fun main() = runBlocking {
                         room.clients.add(client)
                         creator[roomId] = client
 
-                        cico.output.writeStringUtf8("ROOM_CREATED:$roomId\n")
-
-                        println("   Created successfully")
-
                         ID2Player[playerId] = client
+
+                        delay(100)
+                        cico.output.writeStringUtf8("ROOM_CREATED:$roomId\n")
+                        println("   Created successfully")
                     }
 
                     message.startsWith("JOIN_ROOM") -> {
@@ -70,15 +70,16 @@ fun main() = runBlocking {
                                 room.clients.add(client)
                             }
 
-                            cico.output.writeStringUtf8("JOIN_SUCCESS:$roomId\n")
-                            println("   Player $playerId joined room $roomId")
-
                             ID2Player[playerId] = client
                             socket2ID[client] = playerId
 
                             val creatorClient = creator[roomId]
                             val creatorCico = socket2cico[creatorClient]
                             creatorCico?.output?.writeStringUtf8("MEMBER_JOINED:${playerId}\n")
+
+                            delay(100)
+                            cico.output.writeStringUtf8("JOIN_SUCCESS:$roomId\n")
+                            println("   Player $playerId joined room $roomId")
                         } else {
                             cico.output.writeStringUtf8("ERROR:ROOM_NOT_FOUND\n")
                         }
