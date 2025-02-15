@@ -20,8 +20,28 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
 
         val imageUrlList = listOf(
             "https://hcmus.edu.vn/wp-content/uploads/2021/12/logo-khtn_remake-1.png",
-            "https://upload.wikimedia.org/wikipedia/commons/0/00/Logo_UIT_updated.svg",
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlRxVxzJ_r6kqouMYfDStNMB9JGjdZHmL4grtHio-zky9prYZKZnObbngSHECDLx1rApA&usqp=CAU"
+            "https://tuyensinh.uit.edu.vn/intro/images/uit.png",
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlRxVxzJ_r6kqouMYfDStNMB9JGjdZHmL4grtHio-zky9prYZKZnObbngSHECDLx1rApA&usqp=CAU",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/HCMUT_official_logo.png/1200px-HCMUT_official_logo.png",
+            "https://ump.edu.vn/uploads/ckeditor/images/LOGO-DHYD-400.jpg",
+            "https://play-lh.googleusercontent.com/QvRr8HNSe07It4Gic6vu4zDDgcioRrBP9cEsuoc5x8HqXfd4TrK07v7w5SV_VBR1tdQ=w240-h480-rw?fbclid=IwZXh0bgNhZW0CMTAAAR0byMXbaOg6qREWw7Zv0qfNAr70xocylfwbyq0GyAjN-1lBnqVVIwHi-JQ_aem_6ilb8CSDA5mdA4twvytE9g",
+            "https://scontent.fvca1-3.fna.fbcdn.net/v/t39.30808-6/455404073_10169003305875103_8199756517617490402_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=bd9a62&_nc_eui2=AeELiy_TrOEI6rZh-8O2JkAx-_Yex0inJXX79h7HSKcldfI6VIHAdDc0biNKsMht-YaptOu70mvKKnFPaEm84_KU&_nc_ohc=kA9mLvyIb_4Q7kNvgFg5Jaa&_nc_oc=AdjJdf6cO9pEigzopoiKP5V7wV4w5mSkUIu6X11TcVB5U9BxC2pNXNEw53n1nMVM6cF9yiHJspGU14wGjNkS4kVI&_nc_zt=23&_nc_ht=scontent.fvca1-3.fna&_nc_gid=AkFBSjXcF95IWd0476SgKmq&oh=00_AYBHzyf57MDokqSlkCv5baKAjYjzDzsH9WYsWsbw0ahzDQ&oe=67B66545",
+            "https://upload.wikimedia.org/wikipedia/vi/3/30/Logo-NEU.PNG?fbclid=IwZXh0bgNhZW0CMTAAAR1V7AQPNGEnAw_UkA4Ryf-SsVTTTSUoQHtN63wn8hg1Mu_ZAMJJw-OZSC8_aem_WmRm19HQGywwFT7h8vQN2g",
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTu1pHCvJl9Slve269G4BbuU_kYHvQHTdqrKA&s&fbclid=IwZXh0bgNhZW0CMTAAAR0nY84sOZxEI8RccxIfqdD3P87J-tGCJQewEQxm7hzlToAUa4as0gGKfyk_aem_X_4dYDnVXjkJ6qN8tiQqrQ",
+        )
+
+        // Puzzle result
+        var userInput by mutableStateOf("")
+        val resultList = listOf(
+            "HCMUS",
+            "UIT",
+            "UEL",
+            "HCMUT",
+            "UPM",
+            "UEH",
+            "UFM",
+            "NEU",
+            "HUB",
         )
 
         var imageId by mutableStateOf(0)
@@ -55,14 +75,6 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
                 }
             }
         }
-
-        // Puzzle result
-        var userInput by mutableStateOf("")
-        val resultList = listOf(
-            "HCMUS",
-            "UIT",
-            "UEL"
-        )
         var correctAnswer by mutableStateOf(resultList[0])
 
         var isSolved by mutableStateOf(false)
@@ -97,6 +109,7 @@ class PuzzleViewModel @Inject constructor() : ViewModel() {
                 userInput = ""
 
                 if (remainSubmition == 0) {
+                    showAllPieces()
                     isSolved = true
                 }
             }
