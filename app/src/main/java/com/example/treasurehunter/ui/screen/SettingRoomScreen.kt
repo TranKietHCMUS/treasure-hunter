@@ -82,6 +82,9 @@ fun SettingRoomScreen() {
                 isLoading = isLoading,
                 enabled = selectedRadius != null && isMultiplayer != null,
                 onClick = {
+                    val imageId = PuzzleViewModel.imageUrlList.indices.random()
+                    PuzzleViewModel.setImage(imageId)
+
                     if (hasLocationPermission) {
                         isLoading = true
                         fusedLocationClient.getCurrentLocation(

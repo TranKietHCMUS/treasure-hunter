@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.treasurehunter.data.viewModel.GameViewModel
+import com.example.treasurehunter.data.viewModel.PuzzleViewModel
 import com.example.treasurehunter.data.viewModel.SocketViewModel
 import com.example.treasurehunter.ui.component.BackButton
 import com.example.treasurehunter.ui.component.InfoBox
@@ -95,7 +96,7 @@ fun MultiplayerLobby() {
                     enabled = true,
                     onClick = {
                         isLoading = true
-                        viewModel.startGame(roomId, GameViewModel.gameRadius)
+                        viewModel.startGame(roomId, GameViewModel.gameRadius, PuzzleViewModel.imageId)
 
                         while (true) {
                             if (GameViewModel.gameLocation != null) {

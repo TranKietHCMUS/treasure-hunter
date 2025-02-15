@@ -72,10 +72,10 @@ class RoomViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun startGame(roomCode: String, radius: Double) {
+    fun startGame(roomCode: String, radius: Double, imageId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                output?.writeStringUtf8("START_GAME, ROOM_ID:$roomCode, RADIUS:$radius\n")
+                output?.writeStringUtf8("START_GAME, ROOM_ID:$roomCode, RADIUS:$radius, IMAGE:$imageId\n")
             } catch (e: Exception) {
                 Log.e("SOCKET", "startGame: ${e.message}")
             }
@@ -146,8 +146,11 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                         if (it.startsWith("GAME_STARTED")) {
                             val radiusMessage = it.split(",")[1]
                             val radius = radiusMessage.split(":")[1]
+                            val imageMessage = it.split(",")[2]
+                            val imageId = imageMessage.split(":")[1]
 
                             GameViewModel.setGameRadius(radius.toDouble())
+                            PuzzleViewModel.setImage(imageId.toInt())
 
                             message.value = "Game started!"
                             running = false
