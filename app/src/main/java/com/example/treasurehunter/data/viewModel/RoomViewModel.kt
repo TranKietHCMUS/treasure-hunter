@@ -120,7 +120,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                     val response = input?.readUTF8Line()
                     response?.let {
                         if (it.startsWith("MEMBER_JOINED:")) {
-                            members.value += "${it.split(":")[1]},"
+                            members.value += "\n${it.split(":")[1]}"
                         }
                     }
                 } catch (e: Exception) {
@@ -210,6 +210,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                     Log.i("SOCKET", "join room response: $response")
                     response?.let {
                         if (it.startsWith("JOIN_SUCCESS:")) {
+                            message.value = "Joined room $roomCode successfully"
                             joinedRoom.value = it
                             SocketViewModel.room.roomId.value = it.split(':')[1]
                             running = false

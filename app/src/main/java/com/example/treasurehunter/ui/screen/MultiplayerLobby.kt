@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,7 +25,10 @@ import androidx.compose.ui.unit.sp
 import com.example.treasurehunter.data.viewModel.GameViewModel
 import com.example.treasurehunter.data.viewModel.SocketViewModel
 import com.example.treasurehunter.ui.component.BackButton
+import com.example.treasurehunter.ui.component.InfoBox
 import com.example.treasurehunter.ui.component.Loading
+import com.example.treasurehunter.ui.component.Logo
+import com.example.treasurehunter.ui.component.ScrollableBox
 
 @Preview
 @Composable
@@ -36,6 +40,10 @@ fun MultiplayerLobby() {
     val members by viewModel.members
 
     var isLoading by remember { mutableStateOf(false) }
+
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val topPadding = screenHeight / 3
 
     LaunchedEffect (roomId) {
         viewModel.waitingMembers()
@@ -56,28 +64,31 @@ fun MultiplayerLobby() {
                 .fillMaxSize()
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
+            Column (
+                modifier = Modifier.height(topPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Logo()
+            }
 
             CreateButton(
                 isLoading = isLoading,
-                enabled = true,
+                enabled = roomId == "",
                 onClick = {
                     viewModel.createRoom()
                 },
                 myText = "Create Room"
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
+
+            InfoBox("Room ID: $roomId")
 
             if (roomId != "") {
-                Text( modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color.White),
-                    fontSize = 20.sp,
-                    text = "Room ID: $roomId")
-
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 CreateButton(
                     isLoading = isLoading,
@@ -97,16 +108,12 @@ fun MultiplayerLobby() {
                     },
                     myText = "Start Game"
                 )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-            if (members != "") {
-                Text( modifier = Modifier
-                    .padding(16.dp)
-                    .background(Color.White),
-                    fontSize = 20.sp,
-                    text = "Members: $members")
+                ScrollableBox("Members:", members)
+
+                Spacer(modifier = Modifier.height(50.dp))
             }
         }
 
