@@ -30,6 +30,7 @@ import com.example.treasurehunter.ui.theme.Orange
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
@@ -182,6 +183,7 @@ fun PuzzleScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
+
                 Box(
                     modifier = Modifier
                         .size(PuzzleViewModel.imageSize)
@@ -189,6 +191,8 @@ fun PuzzleScreen() {
                             Color(0xFFFFFFFF)
                         )
                 )
+
+                Spacer(modifier = Modifier.height(20.dp))
             }
 
             Column (
@@ -196,6 +200,8 @@ fun PuzzleScreen() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Image(
                     painter = rememberImagePainter(PuzzleViewModel.imageUrl),
                     contentDescription = "Puzzle",
@@ -207,10 +213,12 @@ fun PuzzleScreen() {
 
 //             Show grid 3x3 images here
             Column (
-                modifier = Modifier.fillMaxWidth().padding(20.dp),
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(20.dp))
+
                 for (i in 0 until 3) {
                     Row {
                         for (j in 0 until 3) {
@@ -228,7 +236,7 @@ fun PuzzleScreen() {
                                     modifier =  Modifier
                                         .fillMaxSize()
                                         .background(PuzzleViewModel.images[i][j])
-                                ){}
+                                )
                             }
                         }
                     }

@@ -72,10 +72,10 @@ class RoomViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun startGame(roomCode: String, radius: Double) {
+    fun startGame(roomCode: String, radius: Double, imageId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                output?.writeStringUtf8("START_GAME, ROOM_ID:$roomCode, RADIUS:$radius\n")
+                output?.writeStringUtf8("START_GAME, ROOM_ID:$roomCode, RADIUS:$radius, IMAGE:$imageId\n")
             } catch (e: Exception) {
                 Log.e("SOCKET", "startGame: ${e.message}")
             }
@@ -102,8 +102,12 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                         if (it.startsWith("END_GAME")) {
                             PuzzleViewModel.isSolved = true
                             GameViewModel.screenMode = ScreenMode.PUZZLE
+                            PuzzleViewModel.showAllPieces()
                             running = false
                         }
+                    }
+                    if (PuzzleViewModel.isSolved) {
+                        running = false
                     }
                 } catch (e: Exception) {
                     Log.e("SOCKET", "waitingGame: ${e.message}")
@@ -120,7 +124,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                     val response = input?.readUTF8Line()
                     response?.let {
                         if (it.startsWith("MEMBER_JOINED:")) {
-                            members.value += "${it.split(":")[1]},"
+                            members.value += "\n${it.split(":")[1]}"
                         }
                     }
                 } catch (e: Exception) {
@@ -142,8 +146,11 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                         if (it.startsWith("GAME_STARTED")) {
                             val radiusMessage = it.split(",")[1]
                             val radius = radiusMessage.split(":")[1]
+                            val imageMessage = it.split(",")[2]
+                            val imageId = imageMessage.split(":")[1]
 
                             GameViewModel.setGameRadius(radius.toDouble())
+                            PuzzleViewModel.setImage(imageId.toInt())
 
                             message.value = "Game started!"
                             running = false
@@ -210,6 +217,7 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                     Log.i("SOCKET", "join room response: $response")
                     response?.let {
                         if (it.startsWith("JOIN_SUCCESS:")) {
+                            message.value = "Joined room $roomCode successfully"
                             joinedRoom.value = it
                             SocketViewModel.room.roomId.value = it.split(':')[1]
                             running = false

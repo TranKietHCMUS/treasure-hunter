@@ -2,6 +2,7 @@ package com.example.treasurehunter.ui.screen
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.icu.text.IDNA.Info
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,7 +42,9 @@ import com.example.treasurehunter.data.viewModel.GameViewModel
 import com.example.treasurehunter.data.viewModel.PuzzleViewModel
 import com.example.treasurehunter.data.viewModel.SocketViewModel
 import com.example.treasurehunter.ui.component.BackButton
+import com.example.treasurehunter.ui.component.InfoBox
 import com.example.treasurehunter.ui.component.Loading
+import com.example.treasurehunter.ui.component.Logo
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
@@ -71,6 +75,10 @@ fun JoinRoomScreen() {
 
     val joinedRoom by viewModel.joinedRoom
     val message by viewModel.message
+
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val topPadding = screenHeight / 3
 
     LaunchedEffect(Unit) {
         Log.i("SOCKET", "RoomScreen: LaunchedEffect")
@@ -137,8 +145,16 @@ fun JoinRoomScreen() {
                 .fillMaxSize()
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
+            Column (
+                modifier = Modifier.height(topPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Logo()
+            }
+
             // Tham gia phòng
             var inputRoomCode by remember { mutableStateOf("") }
             TextField(
@@ -151,15 +167,20 @@ fun JoinRoomScreen() {
 
             CreateButton(
                 isLoading = isLoading,
-                enabled = true,
+                enabled = SocketViewModel.room.roomId.value == "",
                 onClick = { viewModel.joinRoom(currentUser?.fullName ?: "Client player", inputRoomCode) },
                 myText = "Join Room"
                 )
 
+            Spacer(modifier = Modifier.height(36.dp))
+
             if (joinedRoom != "") {
                 val roomId = joinedRoom.split(":")[1]
                 SocketViewModel.room.roomId.value = roomId
-                Text(text = "Joined room: $roomId successfully")
+            }
+
+            if (message != "") {
+                InfoBox(message)
             }
 
         }

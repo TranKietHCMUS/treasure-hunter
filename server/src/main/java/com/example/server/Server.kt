@@ -10,7 +10,7 @@ data class Cico(val input : ByteReadChannel, val output : ByteWriteChannel)
 data class Room(val id: String, val clients: MutableList<Socket>)
 
 fun main() = runBlocking {
-    val server = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("192.168.1.6", 8080)
+    val server = aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind("192.168.1.3", 8080)
     println("Server is running at ${server.localAddress}")
 
     // Quản lý danh sách phòng
@@ -109,6 +109,8 @@ fun main() = runBlocking {
                         val roomId = roomMessage.split(":")[1]
                         val radiusMessage = message.split(",")[2]
                         val radius = radiusMessage.split(":")[1]
+                        val imageMessage = message.split(",")[3]
+                        val imageId = imageMessage.split(":")[1]
 
                         val room = rooms[roomId]
 
@@ -118,7 +120,7 @@ fun main() = runBlocking {
                                     val clientCico = socket2cico[it]
                                     println("   Sending GAME_STARTED to ${it.remoteAddress}")
                                     println("   Client cico: $clientCico")
-                                    clientCico?.output?.writeStringUtf8("GAME_STARTED, RADIUS:$radius\n")
+                                    clientCico?.output?.writeStringUtf8("GAME_STARTED, RADIUS:$radius, IMAGE:$imageId\n")
                                 }
                             }
                         } else {
