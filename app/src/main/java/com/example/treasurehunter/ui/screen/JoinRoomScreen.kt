@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.example.app.auth.AuthViewModel
 import com.example.treasurehunter.BuildConfig
 import com.example.treasurehunter.LocalNavController
 import com.example.treasurehunter.data.viewModel.GameViewModel
@@ -54,6 +56,8 @@ fun JoinRoomScreen() {
 
     val context = LocalContext.current
     var currentLocation by remember { mutableStateOf<LatLng?>(null) }
+
+    val currentUser by AuthViewModel.currentUser.collectAsState(initial = null)
 
     val hasLocationPermission = ContextCompat.checkSelfPermission(
         context, Manifest.permission.ACCESS_FINE_LOCATION
@@ -148,7 +152,7 @@ fun JoinRoomScreen() {
             CreateButton(
                 isLoading = isLoading,
                 enabled = true,
-                onClick = { viewModel.joinRoom(inputRoomCode) },
+                onClick = { viewModel.joinRoom(currentUser?.fullName ?: "Client player", inputRoomCode) },
                 myText = "Join Room"
                 )
 

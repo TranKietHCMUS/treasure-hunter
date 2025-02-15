@@ -36,7 +36,6 @@ import com.example.treasurehunter.ui.screen.JoinRoomScreen
 import com.example.treasurehunter.ui.screen.MultiplayerLobby
 import com.example.treasurehunter.ui.screen.ProfileScreen
 import com.example.treasurehunter.ui.screen.RoomControlScreen
-import com.example.treasurehunter.ui.screen.RoomScreen
 import com.example.treasurehunter.ui.screen.SettingRoomScreen
 //import com.example.treasurehunter.ui.theme.TreasureHunterTheme
 import com.example.treasurehunter.ui.screen.TestScreen
@@ -78,14 +77,11 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 fun MyApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
-    Log.i("SOCKET", "RoomScreen: LaunchedEffect")
-    SocketViewModel.room.connectToServer(BuildConfig.IP, BuildConfig.PORT)
-
     Box(modifier = modifier.fillMaxSize()) {
         CompositionLocalProvider(LocalNavController provides navController) {
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "login",
                 enterTransition = { EnterTransition.None },
                 exitTransition = { ExitTransition.None },
                 modifier = Modifier
@@ -101,7 +97,6 @@ fun MyApp(modifier: Modifier = Modifier) {
                 composable("login") { LoginScreen() { navController.navigate("home") } }
                 composable("register") { RegisterScreen() { navController.navigate("login") } }
                 composable("profile") { ProfileScreen() }
-                composable("room") { RoomScreen() }
                 composable("control-room") { RoomControlScreen() }
                 composable("join-room") { JoinRoomScreen() }
                 composable("multiplayer-lobby") { MultiplayerLobby() }

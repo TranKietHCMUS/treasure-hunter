@@ -1,6 +1,7 @@
 package com.example.app.auth
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -12,7 +13,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.treasurehunter.BuildConfig
 import com.example.treasurehunter.LocalNavController
+import com.example.treasurehunter.data.viewModel.SocketViewModel
 import com.example.treasurehunter.ui.component.Logo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,7 +82,11 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
                         AuthViewModel.loginUser(
                             email,
                             password,
-                            onSuccess = { onLoginSuccess() },
+                            onSuccess = {
+                                onLoginSuccess()
+                                Log.i("SOCKET", "RoomScreen: Connect socket")
+                                SocketViewModel.room.connectToServer(BuildConfig.IP, BuildConfig.PORT)
+                            },
                             onError = { errorMessage = it }
                         )
                     },

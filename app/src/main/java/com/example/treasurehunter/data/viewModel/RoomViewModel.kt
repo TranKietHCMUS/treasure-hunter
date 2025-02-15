@@ -1,9 +1,12 @@
 package com.example.treasurehunter.data.viewModel
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.app.auth.AuthViewModel
 import com.example.treasurehunter.data.model.ScreenMode
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
@@ -37,6 +40,17 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                 message.value = response ?: "No response from server"
             } catch (e: Exception) {
                 message.value = "Error: ${e.message}"
+            }
+        }
+    }
+
+    fun disconnectFromServer() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                output?.writeStringUtf8("DISCONNECT\n")
+                socket?.close()
+            } catch (e: Exception) {
+                Log.e("SOCKET", "disconnect: ${e.message}")
             }
         }
     }
@@ -176,12 +190,12 @@ class RoomViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun joinRoom(roomCode: String) {
+    fun joinRoom(username: String, roomCode: String) {
         viewModelScope.launch(Dispatchers.IO) {
             var running = true
             while (running) {
                 try {
-                    output?.writeStringUtf8("JOIN_ROOM, PLAYER_ID:${SocketViewModel.playerID}, ROOM_ID:$roomCode\n")
+                    output?.writeStringUtf8("JOIN_ROOM, PLAYER_ID:${username}, ROOM_ID:$roomCode\n")
                     Log.i("SOCKET", "join room:")
                     running = false
                 } catch (e: Exception) {

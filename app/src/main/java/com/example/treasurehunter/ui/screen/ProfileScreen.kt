@@ -1,5 +1,6 @@
 package com.example.treasurehunter.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,10 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app.auth.AuthViewModel
+import com.example.treasurehunter.BuildConfig
 import com.example.treasurehunter.R
 import com.example.treasurehunter.data.model.User
 import com.example.treasurehunter.ui.component.BackButton
 import com.example.treasurehunter.LocalNavController
+import com.example.treasurehunter.data.viewModel.SocketViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -123,6 +126,10 @@ fun ProfileScreen() {
                     Button(
                         onClick = {
                             AuthViewModel.logoutUser()
+
+                            Log.i("SOCKET", "RoomScreen: Disconnect socket")
+                            SocketViewModel.room.disconnectFromServer()
+
                             navController.navigate("login") {
                                 popUpTo(navController.graph.startDestinationId) {
                                     inclusive = true
