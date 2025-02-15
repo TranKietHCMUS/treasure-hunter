@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
@@ -78,16 +79,17 @@ class ScoreViewModel @Inject constructor() : ViewModel() {
 
         fun shareScore(context: Context) {
             val shareDialog = ShareDialog(context as androidx.fragment.app.FragmentActivity)
-
+            Log.d("ShareButton", "Share button clicked")
             if (ShareDialog.canShow(SharePhotoContent::class.java)) {
+                Log.d("ShareButton", "Share by Facebook!")
                 val linkContent = ShareLinkContent.Builder()
                     .setContentUrl(Uri.parse("https://www.facebook.com/profile.php?id=61573386952602"))
                     .setQuote("Tôi vừa đạt được $score điểm trong game Treasure Hunter!")
                     .setShareHashtag(ShareHashtag.Builder().setHashtag("#TreasureHunter").build())
                     .build()
-
                 shareDialog.show(linkContent)
             } else {
+                Log.d("ShareButton", "Cannot share through Facebook")
                 // Using AlertDialog.Builder instead of MaterialAlertDialogBuilder
                 AlertDialog.Builder(context)
                     .setTitle("Không thể chia sẻ qua Facebook")
@@ -104,6 +106,8 @@ class ScoreViewModel @Inject constructor() : ViewModel() {
 
         private fun shareViaIntent(context: Context) {
             try {
+                Log.d("ShareButton", "Share through intent!")
+
                 val textToShare = "Tôi vừa đạt được $score điểm trong game Treasure Hunter!"
 
                 // Get bitmap from drawable

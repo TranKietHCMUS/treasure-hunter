@@ -499,11 +499,11 @@ public class ARActivity extends AppCompatActivity
             Texture virtualObjectTexture =
                     Texture.createFromAsset(
                             render,
-                            "models/TreasureChest_UV_03.png",  // Update this path if needed
+                            "models/teasure2.png",  // Update this path if needed
                             Texture.WrapMode.CLAMP_TO_EDGE,
                             Texture.ColorFormat.SRGB);
 
-            virtualObjectMesh = Mesh.createFromAsset(render, "models/TreasureChest.obj");
+            virtualObjectMesh = Mesh.createFromAsset(render, "models/chest2.obj");
             geospatialAnchorVirtualObjectShader =
                     Shader.createFromAssets(
                                     render,
