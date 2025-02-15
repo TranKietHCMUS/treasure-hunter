@@ -20,7 +20,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ScrollableBox(title: String, text: String) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Box(
             modifier = Modifier

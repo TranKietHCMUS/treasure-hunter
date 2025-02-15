@@ -102,8 +102,12 @@ class RoomViewModel @Inject constructor() : ViewModel() {
                         if (it.startsWith("END_GAME")) {
                             PuzzleViewModel.isSolved = true
                             GameViewModel.screenMode = ScreenMode.PUZZLE
+                            PuzzleViewModel.showAllPieces()
                             running = false
                         }
+                    }
+                    if (PuzzleViewModel.isSolved) {
+                        running = false
                     }
                 } catch (e: Exception) {
                     Log.e("SOCKET", "waitingGame: ${e.message}")
