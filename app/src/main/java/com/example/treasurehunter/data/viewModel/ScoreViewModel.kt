@@ -1,12 +1,16 @@
 package com.example.treasurehunter.data.viewModel
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -78,71 +82,87 @@ class ScoreViewModel @Inject constructor() : ViewModel() {
 //        }
 
         fun shareScore(context: Context) {
+            val facebookInstalled = isFacebookInstalled(context)
+
+            if (!facebookInstalled) {
+                Log.d("ShareButton", "Facebook is not installed, showing AlertDialog.")
+                showShareDialog(context)
+                return
+            }
+
             val shareDialog = ShareDialog(context as androidx.fragment.app.FragmentActivity)
             Log.d("ShareButton", "Share button clicked")
-            if (ShareDialog.canShow(SharePhotoContent::class.java)) {
-                Log.d("ShareButton", "Share by Facebook!")
+
+            if (ShareDialog.canShow(ShareLinkContent::class.java)) {
+                Log.d("ShareButton", "Share via Facebook!")
                 val linkContent = ShareLinkContent.Builder()
                     .setContentUrl(Uri.parse("https://www.facebook.com/profile.php?id=61573386952602"))
                     .setQuote("Tôi vừa đạt được $score điểm trong game Treasure Hunter!")
                     .setShareHashtag(ShareHashtag.Builder().setHashtag("#TreasureHunter").build())
                     .build()
+
                 shareDialog.show(linkContent)
+
+                // 🔥 Show AlertDialog after delay to ask if sharing was successful
+                Handler(Looper.getMainLooper()).postDelayed({
+                    showConfirmDialog(context)
+                }, 3000) // Wait 3 seconds before asking user
             } else {
-                Log.d("ShareButton", "Cannot share through Facebook")
-                // Using AlertDialog.Builder instead of MaterialAlertDialogBuilder
-                AlertDialog.Builder(context)
-                    .setTitle("Không thể chia sẻ qua Facebook")
-                    .setMessage("Bạn chưa cài đặt ứng dụng Facebook. Bạn có muốn chia sẻ qua ứng dụng khác không?")
-                    .setNegativeButton("Hủy") { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .setPositiveButton("Chia sẻ qua ứng dụng khác") { _, _ ->
-                        shareViaIntent(context)
-                    }
-                    .show()
+                Log.d("ShareButton", "Cannot share through Facebook, showing AlertDialog.")
+                showShareDialog(context)  // Show dialog immediately if Facebook isn't available
             }
         }
 
-        private fun shareViaIntent(context: Context) {
-            try {
-                Log.d("ShareButton", "Share through intent!")
-
-                val textToShare = "Tôi vừa đạt được $score điểm trong game Treasure Hunter!"
-
-                // Get bitmap from drawable
-                val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.logotitle)
-
-                // Save image to cache
-                val file = File(context.cacheDir, "shared_image.png")
-                FileOutputStream(file).use { out ->
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-                }
-
-                // Get image URI
-                val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-
-                // Share intent
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = "image/*"
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    putExtra(Intent.EXTRA_TEXT, textToShare)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-
-                // Open share dialog
-                context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ qua"))
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // Using AlertDialog.Builder for error dialog as well
-                AlertDialog.Builder(context)
-                    .setTitle("Lỗi")
-                    .setMessage("Không thể chia sẻ. Vui lòng thử lại sau.")
-                    .setPositiveButton("Đóng") { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .show()
+        // 🔥 Check if Facebook app is installed
+        fun isFacebookInstalled(context: Context): Boolean {
+            val packageManager = context.packageManager
+            return try {
+                packageManager.getPackageInfo("com.facebook.katana", PackageManager.GET_ACTIVITIES)
+                true
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
             }
         }
+
+
+        // 🔥 Ask the user if Facebook sharing worked
+        fun showConfirmDialog(context: Context) {
+            AlertDialog.Builder(context)
+                .setTitle("Bạn có chia sẻ thành công không?")
+                .setMessage("Ứng dụng không thể xác nhận bạn đã chia sẻ thành công hay chưa. Vui lòng xác nhận!")
+                .setNegativeButton("Chưa. Tôi muốn chia sẻ qua ứng dụng khác") { _, _ ->
+                    shareViaIntent(context)  // Fallback to Intent sharing
+                }
+                .setPositiveButton("Đã chia sẻ thành công") { dialog, _ ->
+                    dialog.dismiss()  // User confirms sharing worked, do nothing
+                }
+                .show()
+        }
+
+        // 🔥 Show the fallback AlertDialog immediately if Facebook isn't available
+        fun showShareDialog(context: Context) {
+            AlertDialog.Builder(context)
+                .setTitle("Không thể chia sẻ qua Facebook")
+                .setMessage("Bạn chưa cài đặt ứng dụng Facebook hoặc ứng dụng không thể chia sẻ. Bạn có muốn chia sẻ qua ứng dụng khác không?")
+                .setNegativeButton("Hủy") { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton("Chia sẻ qua ứng dụng khác") { _, _ ->
+                    shareViaIntent(context)
+                }
+                .show()
+        }
+
+        // 🔥 Intent-based sharing (alternative method)
+        fun shareViaIntent(context: Context) {
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, "Chia sẻ thành tích!")
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "Tôi vừa đạt được $score điểm trong game Treasure Hunter! #TreasureHunter\nhttps://www.facebook.com/profile.php?id=61573386952602"
+                )
+            }
+            context.startActivity(Intent.createChooser(shareIntent, "Chia sẻ qua"))
+        }
+
     }
 }
