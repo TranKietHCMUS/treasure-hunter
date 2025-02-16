@@ -1,12 +1,9 @@
 package com.example.treasurehunter.data.viewModel
 
 import android.util.Log
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.app.auth.AuthViewModel
 import com.example.treasurehunter.data.model.ScreenMode
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*

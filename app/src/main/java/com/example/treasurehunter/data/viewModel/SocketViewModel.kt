@@ -1,6 +1,5 @@
 package com.example.treasurehunter.data.viewModel
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 class SocketViewModel {
     companion object {

@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel
 import com.example.app.auth.AuthViewModel
 import com.example.treasurehunter.data.model.ScreenMode
 import javax.inject.Inject
-import kotlin.math.max
 import kotlin.random.Random
 
 

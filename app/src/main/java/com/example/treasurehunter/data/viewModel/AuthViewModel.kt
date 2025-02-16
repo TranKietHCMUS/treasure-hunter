@@ -1,14 +1,12 @@
 package com.example.app.auth
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.treasurehunter.data.model.Gender
 import com.example.treasurehunter.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import java.util.Date
 
 class AuthViewModel : ViewModel() {

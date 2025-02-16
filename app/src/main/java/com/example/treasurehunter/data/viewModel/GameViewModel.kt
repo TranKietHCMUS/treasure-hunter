@@ -20,17 +20,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.*
-
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import com.google.android.gms.location.*
 import com.google.android.gms.tasks.CancellationToken
-import com.example.treasurehunter.data.viewModel.GameViewModel
-import com.example.treasurehunter.ui.component.BackButton
-import com.example.treasurehunter.ui.component.Loading
-import com.example.treasurehunter.ui.component.Logo
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener

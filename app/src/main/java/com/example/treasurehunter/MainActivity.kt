@@ -4,7 +4,6 @@ import MapScreen
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.EnterTransition
@@ -26,7 +25,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.app.auth.LoginScreen
 import com.example.app.auth.RegisterScreen
-import com.example.treasurehunter.data.viewModel.SocketViewModel
 import com.example.treasurehunter.data.viewModel.TreasureViewModel
 import com.example.treasurehunter.ui.component.OpenChest
 import com.example.treasurehunter.ui.screen.ARScreen
