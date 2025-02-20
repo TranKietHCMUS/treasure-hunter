@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.treasurehunter.LocalNavController
+import com.example.treasurehunter.data.viewModel.GameViewModel
 
 @Preview
 @Composable
@@ -44,7 +45,8 @@ fun TestScreen() {
                 contentColor = Color.Black
             ),
             onClick = {
-            navController.navigate("home")
+                GameViewModel.stopTrackingUserLocation()
+                navController.navigate("home")
         }
         ) {
             Text("Give up!")

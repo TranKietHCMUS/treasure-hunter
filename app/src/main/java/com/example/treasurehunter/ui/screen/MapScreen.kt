@@ -74,7 +74,7 @@ fun MapScreen(
     }
 
     Surface(modifier = modifier.fillMaxSize()) {
-        if (gameLocation != null) {
+        if (gameLocation != null) {                                                                                                                                                             
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 properties = MapProperties(
@@ -116,7 +116,7 @@ fun MapScreen(
                 }
 
                 currentUserLocation?.let {
-                    Log.d("MapScreen", "Current user location: $it")
+//                    Log.d("MapScreen", "Current user location: $it")
                     Marker(
                         state = MarkerState(position = it),
                         title = "Your Location",

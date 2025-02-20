@@ -18,6 +18,7 @@ import com.google.android.gms.location.LocationResult
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.CancellationToken
@@ -96,6 +97,8 @@ class GameViewModel @Inject constructor() : ViewModel()  {
 
         private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
+        private var locationCallback: LocationCallback? = null
+
         // Khởi tạo FusedLocationProviderClient
         fun initialize(context: Context) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
@@ -172,7 +175,7 @@ class GameViewModel @Inject constructor() : ViewModel()  {
                 .setMinUpdateDistanceMeters(0f) // Cập nhật nếu người dùng di chuyển ít nhất 10m
                 .build()
 
-            val locationCallback = object : LocationCallback() {
+            locationCallback = object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
                     locationResult.locations.firstOrNull()?.let { location ->
                         val userLocation = LatLng(location.latitude, location.longitude)
@@ -189,15 +192,17 @@ class GameViewModel @Inject constructor() : ViewModel()  {
             // Bắt đầu theo dõi vị trí
             fusedLocationProviderClient.requestLocationUpdates(
                 locationRequest,
-                locationCallback,
-                null // Chạy trên main thread mặc định
+                locationCallback!!,
+                Looper.getMainLooper()
             )
         }
 
         // Dừng theo dõi vị trí người dùng
         fun stopTrackingUserLocation() {
-            if (::fusedLocationProviderClient.isInitialized) {
-                fusedLocationProviderClient.removeLocationUpdates(object : LocationCallback() {})
+            if (::fusedLocationProviderClient.isInitialized && locationCallback != null) {
+                fusedLocationProviderClient.removeLocationUpdates(locationCallback!!)
+                locationCallback = null
+                Log.d("GameViewModel", "Stopped tracking user location")
             }
         }
 
